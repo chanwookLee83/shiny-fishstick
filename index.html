@@ -844,15 +844,17 @@ body.light mark{background:transparent;color:var(--amber);font-weight:700;}
   <div class="sec" style="margin-top:4px;">
     <div class="sec-title">데이터 내보내기</div>
     <button class="share-btn sb-amber" onclick="exportAllCSV()"><span>📊</span> 전체 CSV 내보내기</button>
-    <div class="share-note">→ 장비 / 정비이력 / 부품재고 / 점검기록 전체 포함</div>
+    <div class="share-note">→ 장비 / 정비이력 / 부품재고 / 점검기록 / 일정 전체 포함</div>
     <button class="share-btn sb-green" onclick="exportMaintCSV()"><span>🔧</span> 정비이력 CSV</button>
     <div class="share-note">→ 장비별 정비일지 + 부품사용 내역</div>
     <button class="share-btn sb-blue" onclick="exportPartsCSV()"><span>📦</span> 부품재고 CSV</button>
     <div class="share-note">→ 현재 재고 현황 + 안전재고 기준</div>
     <button class="share-btn sb-green" onclick="exportInboundCSV()"><span>📥</span> 입고이력 CSV</button>
     <div class="share-note">→ 부품별 입고 일자 / 수량 / 단가 / 공급업체 내역</div>
+    <button class="share-btn" style="background:linear-gradient(135deg,#8b5cf620,#8b5cf608);border:1px solid #8b5cf640;color:var(--purple);" onclick="exportEventsCSV()"><span>📅</span> 일정 CSV</button>
+    <div class="share-note">→ 등록된 일정 전체 (날짜 / 구분 / 제목 / 담당자 / 내용 / 완료여부)</div>
     <button class="share-btn sb-amber" onclick="exportJSON()"><span>💾</span> 전체 백업 (JSON)</button>
-    <div class="share-note">→ 전체 데이터 백업 파일</div>
+    <div class="share-note">→ 전체 데이터 백업 파일 (일정 포함)</div>
   </div>
   <div class="share-divider"><span>복원</span></div>
   <div class="sec" style="margin-top:16px;">
@@ -2559,7 +2561,7 @@ function deleteInsp(i){
 
 // ══════ CSV 내보내기 ══════
 function exportAllCSV(){
-  if(!db.maints.length&&!db.eqs.length){toast('데이터 없음','w');return;}
+  if(!db.maints.length&&!db.eqs.length&&!db.events.length){toast('데이터 없음','w');return;}
   const rows=['=== 장비 목록 ===','장비명,시리얼번호,설치일,위치,점검주기(일)'];
   db.eqs.forEach(e=>rows.push([e.name,e.serial||'',e.install||'',e.loc||'',e.cycle||''].join(',')));
   rows.push('');
@@ -2570,6 +2572,10 @@ function exportAllCSV(){
   rows.push('=== 부품 재고 ===');
   rows.push('형번,부품명,메이커,타입,단가,현재수량,안전재고,재고가치');
   db.parts.forEach(p=>rows.push([p.pn,p.name,p.maker||'',p.type,p.price,p.qty,p.safe,p.price*p.qty].join(',')));
+  rows.push('');
+  rows.push('=== 일정 ===');
+  rows.push('날짜,종료일,구분,제목,담당자,내용,완료여부');
+  db.events.forEach(ev=>rows.push([ev.date,ev.dateEnd||'',ev.cat||'',`"${ev.title}"`,ev.owner||'',`"${ev.content||''}"`,ev.done?'완료':'예정'].join(',')));
   download('설비관리_전체_'+localToday()+'.csv','\uFEFF'+rows.join('\n'),'text/csv');
   toast('전체 CSV 내보내기 완료');
 }
@@ -2587,6 +2593,23 @@ function exportPartsCSV(){
   db.parts.forEach(p=>rows.push([p.pn,p.name,p.maker||'',p.type,p.price,p.qty,p.safe,p.price*p.qty,p.qty<=p.safe?'부족':p.qty<=p.safe*1.5?'주의':'정상'].join(',')));
   download('부품재고_'+localToday()+'.csv','\uFEFF'+rows.join('\n'),'text/csv');
   toast('부품재고 CSV 내보내기 완료');
+}
+function exportEventsCSV(){
+  if(!db.events.length){toast('등록된 일정 없음','w');return;}
+  const rows=['날짜,종료일,구분,제목,담당자,내용,완료여부'];
+  db.events.sort((a,b)=>a.date.localeCompare(b.date)).forEach(ev=>{
+    rows.push([
+      ev.date,
+      ev.dateEnd||'',
+      ev.cat||'',
+      `"${ev.title}"`,
+      ev.owner||'',
+      `"${(ev.content||'').replace(/"/g,'""')}"`,
+      ev.done?'완료':'예정'
+    ].join(','));
+  });
+  download('일정_'+localToday()+'.csv','\uFEFF'+rows.join('\n'),'text/csv');
+  toast('일정 CSV 내보내기 완료');
 }
 function exportJSON(){
   download('설비관리_백업_'+localToday()+'.json',JSON.stringify({app:'mms_v1',exported:localToday(),data:db},null,2),'application/json');
