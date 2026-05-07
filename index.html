@@ -506,12 +506,10 @@ body.light mark{background:transparent;color:var(--amber);font-weight:700;}
         </div>
         <div class="field"><label class="flabel">작업자</label><div class="ac-wrap"><input class="finput" id="mWorker" placeholder="이름" autocomplete="off" oninput="acShow('mWorker','workers')"><div class="ac-list" id="ac-mWorker"></div></div></div>
       </div>
-      <div class="frow">
-        <div class="field"><label class="flabel">시작일시</label><input class="finput" id="mStart" type="datetime-local"></div>
-        <div class="field"><label class="flabel">종료일시</label><input class="finput" id="mEnd" type="datetime-local"></div>
-      </div>
-      <div class="field"><label class="flabel">정비 내용 *</label><textarea class="ftextarea" id="mContent" placeholder="정비 내용을 입력하세요..."></textarea></div>
       <div class="field"><label class="flabel">원인</label><div class="ac-wrap"><input class="finput" id="mCause" placeholder="고장 원인 또는 정비 사유" autocomplete="off" oninput="acShow('mCause','causes')"><div class="ac-list" id="ac-mCause"></div></div></div>
+      <div class="field"><label class="flabel">정비 내용 *</label><textarea class="ftextarea" id="mContent" placeholder="정비 내용을 입력하세요..." style="height:88px;"></textarea></div>
+      <div class="field"><label class="flabel">시작일시</label><input class="finput" id="mStart" type="datetime-local" style="font-size:14px;"></div>
+      <div class="field"><label class="flabel">종료일시</label><input class="finput" id="mEnd" type="datetime-local" style="font-size:14px;"></div>
     </div>
   </div>
 
@@ -1078,12 +1076,10 @@ body.light mark{background:transparent;color:var(--amber);font-weight:700;}
       </div>
       <div class="field"><label class="flabel">작업자</label><div class="ac-wrap"><input class="finput" id="eMWorker" autocomplete="off" oninput="acShow('eMWorker','workers')"><div class="ac-list" id="ac-eMWorker"></div></div></div>
     </div>
-    <div class="frow">
-      <div class="field"><label class="flabel">시작일시</label><input class="finput" id="eMStart" type="datetime-local"></div>
-      <div class="field"><label class="flabel">종료일시</label><input class="finput" id="eMEnd" type="datetime-local"></div>
-    </div>
-    <div class="field"><label class="flabel">정비 내용 *</label><textarea class="ftextarea" id="eMContent"></textarea></div>
     <div class="field"><label class="flabel">원인</label><div class="ac-wrap"><input class="finput" id="eMCause" autocomplete="off" oninput="acShow('eMCause','causes')"><div class="ac-list" id="ac-eMCause"></div></div></div>
+    <div class="field"><label class="flabel">정비 내용 *</label><textarea class="ftextarea" id="eMContent" style="height:88px;"></textarea></div>
+    <div class="field"><label class="flabel">시작일시</label><input class="finput" id="eMStart" type="datetime-local" style="font-size:14px;"></div>
+    <div class="field"><label class="flabel">종료일시</label><input class="finput" id="eMEnd" type="datetime-local" style="font-size:14px;"></div>
     <button class="btn-primary" style="margin-top:4px;" onclick="saveMaintEdit()">💾 저장</button>
   </div>
 </div>
