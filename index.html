@@ -16,6 +16,84 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="설비관리">
 <title>Maintenance History</title>
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAaqbae8isyjMsCbO7mhPjQSI0DlBwJ_Sk",
+  authDomain: "maintenance-app-3632e.firebaseapp.com",
+  projectId: "maintenance-app-3632e",
+  storageBucket: "maintenance-app-3632e.firebasestorage.app",
+  messagingSenderId: "678083184973",
+  appId: "1:678083184973:web:fdee29ea69f1161b204f04",
+  measurementId: "G-RLGP5DZSTH"
+};
+
+const app = initializeApp(firebaseConfig);
+const fdb = getFirestore(app);
+const DOC_REF = doc(fdb, 'mms', 'maindb');
+
+// Firestore → 앱으로 실시간 수신
+let isSyncing = false;
+onSnapshot(DOC_REF, (snap) => {
+  if (!snap.exists()) return;
+  const data = snap.data();
+  if (!data || !data.db) return;
+  // 내가 방금 올린 데이터면 무시 (무한루프 방지)
+  if (isSyncing) return;
+  // 로컬보다 서버가 최신이면 업데이트
+  const serverDb = JSON.parse(data.db);
+  if (data.updatedAt > (window._lastSaveAt || 0)) {
+    window.db = serverDb;
+    localStorage.setItem('mms_v1', data.db);
+    if (window.db.events === undefined) window.db.events = [];
+    if (window.db.inbounds === undefined) window.db.inbounds = [];
+    // UI 갱신
+    if (typeof renderEqList === 'function') {
+      renderEqList();
+      renderMaintLog();
+      renderParts();
+      renderInsp();
+      checkAlarms();
+      updateEvBadge();
+    }
+    showSyncBadge('🔄 동기화됨');
+  }
+});
+
+// 앱 → Firestore 저장
+window.saveToFirestore = async function(dbData) {
+  try {
+    isSyncing = true;
+    const now = Date.now();
+    window._lastSaveAt = now;
+    await setDoc(DOC_REF, {
+      db: JSON.stringify(dbData),
+      updatedAt: now
+    });
+    isSyncing = false;
+    showSyncBadge('☁️ 저장됨');
+  } catch(e) {
+    isSyncing = false;
+    showSyncBadge('⚠️ 오프라인');
+    console.warn('Firestore save failed:', e);
+  }
+};
+
+function showSyncBadge(msg) {
+  const el = document.getElementById('syncBadge');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+window._firebaseReady = true;
+console.log('Firebase 연동 완료');
+</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Share+Tech+Mono&family=Barlow+Condensed:wght@500;600;700;900&display=swap');
 :root{
@@ -53,6 +131,9 @@ body{font-family:var(--sans);color:var(--text);display:flex;flex-direction:colum
 .topbar-date{font-family:var(--mono);font-size:12px;color:var(--muted);}
 .theme-btn{background:none;border:1px solid var(--border2);border-radius:6px;color:var(--muted2);font-size:16px;padding:5px 8px;cursor:pointer;transition:all .2s;}
 .theme-btn:active{border-color:var(--amber);color:var(--amber);}
+/* 동기화 뱃지 */
+.sync-badge{font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:20px;background:#10b98120;border:1px solid #10b98140;color:var(--green);opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+.sync-badge.show{opacity:1;}
 
 /* TABBAR */
 .tabbar{display:flex;background:var(--surf);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;}
@@ -457,6 +538,7 @@ body.light .sec-title::after{background:#d4d9e2;}
   </div>
   <div class="tr">
     <div class="topbar-date" id="topDate"></div>
+    <span class="sync-badge" id="syncBadge"></span>
     <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
     <button class="alarm-btn" onclick="toggleAlarm()">🔔<div class="alarm-badge" id="alarmBadge">0</div></button>
   </div>
@@ -479,7 +561,7 @@ body.light .sec-title::after{background:#d4d9e2;}
     <div class="sec-title">장비 등록</div>
     <div class="card amber-t">
       <!-- 기본 정보 -->
-      <div style="font-family:var(--cond);font-size:14px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin-bottom:8px;display:flex;align-items:center;gap:8px;">기본 정보<span style="flex:1;height:1px;background:var(--border);display:block;"></span></div>
+      <div style="font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin-bottom:8px;display:flex;align-items:center;gap:8px;">기본 정보<span style="flex:1;height:1px;background:var(--border);display:block;"></span></div>
       <div class="field"><label class="flabel">장비명 *</label><div class="ac-wrap"><input class="finput" id="eqName" placeholder="예) 용접 로봇 #1" autocomplete="off" oninput="acShow('eqName','eqNames')"><div class="ac-list" id="ac-eqName"></div></div></div>
       <div class="frow">
         <div class="field"><label class="flabel">시리얼번호</label><div class="ac-wrap"><input class="finput" id="eqSerial" placeholder="예) WR-2024-001" autocomplete="off" oninput="acShow('eqSerial','eqSerials')"><div class="ac-list" id="ac-eqSerial"></div></div></div>
@@ -501,7 +583,7 @@ body.light .sec-title::after{background:#d4d9e2;}
       </div>
 
       <!-- 장비 등급 -->
-      <div style="font-family:var(--cond);font-size:14px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin:12px 0 8px;display:flex;align-items:center;gap:8px;">🏅 장비 등급<span style="flex:1;height:1px;background:var(--border);display:block;"></span><button onclick="openGradeGuide()" style="background:none;border:1px solid var(--border2);border-radius:5px;color:var(--muted2);font-family:var(--cond);font-size:9px;font-weight:700;padding:2px 8px;cursor:pointer;letter-spacing:1px;">기준표 ▸</button></div>
+      <div style="font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin:12px 0 8px;display:flex;align-items:center;gap:8px;">🏅 장비 등급<span style="flex:1;height:1px;background:var(--border);display:block;"></span><button onclick="openGradeGuide()" style="background:none;border:1px solid var(--border2);border-radius:5px;color:var(--muted2);font-family:var(--cond);font-size:9px;font-weight:700;padding:2px 8px;cursor:pointer;letter-spacing:1px;">기준표 ▸</button></div>
       <input type="hidden" id="eqGrade" value="">
       <div class="grade-selector">
         <div class="grade-btn" id="gbtn-S" onclick="selectGrade('eqGrade','S')">S<div style="font-size:8px;font-weight:400;margin-top:2px;letter-spacing:0;">최우선</div></div>
@@ -511,7 +593,7 @@ body.light .sec-title::after{background:#d4d9e2;}
       </div>
 
       <!-- 전기 사양 -->
-      <div style="font-family:var(--cond);font-size:14px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin:12px 0 8px;display:flex;align-items:center;gap:8px;">⚡ 전기 사양<span style="flex:1;height:1px;background:var(--border);display:block;"></span></div>
+      <div style="font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin:12px 0 8px;display:flex;align-items:center;gap:8px;">⚡ 전기 사양<span style="flex:1;height:1px;background:var(--border);display:block;"></span></div>
       <div class="field"><label class="flabel">전원 종류</label>
         <div class="fselect-w"><select class="fselect" id="eqPower">
           <option value="">미입력</option>
@@ -524,11 +606,11 @@ body.light .sec-title::after{background:#d4d9e2;}
       </div>
 
       <!-- 공압 사양 -->
-      <div style="font-family:var(--cond);font-size:14px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin:12px 0 8px;display:flex;align-items:center;gap:8px;">🔵 공압 사양<span style="flex:1;height:1px;background:var(--border);display:block;"></span></div>
+      <div style="font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin:12px 0 8px;display:flex;align-items:center;gap:8px;">🔵 공압 사양<span style="flex:1;height:1px;background:var(--border);display:block;"></span></div>
       <div class="field"><label class="flabel">사용 압력 (MPa)</label><input class="finput" id="eqAirPres" type="number" placeholder="예) 0.5" step="0.01" min="0" inputmode="decimal"></div>
 
       <!-- 비고 -->
-      <div style="font-family:var(--cond);font-size:14px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin:12px 0 8px;display:flex;align-items:center;gap:8px;">📝 비고<span style="flex:1;height:1px;background:var(--border);display:block;"></span></div>
+      <div style="font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin:12px 0 8px;display:flex;align-items:center;gap:8px;">📝 비고<span style="flex:1;height:1px;background:var(--border);display:block;"></span></div>
       <div class="field"><label class="flabel">메모</label><textarea class="ftextarea" id="eqMemo" placeholder="특이사항, 주의사항 등 자유롭게 입력..."></textarea></div>
 
       <button class="btn-primary" onclick="registerEq()">🏭 장비 등록</button>
@@ -617,8 +699,8 @@ body.light .sec-title::after{background:#d4d9e2;}
         <div class="field"><label class="flabel">메이커</label><div class="ac-wrap"><input class="finput" id="pMaker" placeholder="예) SKF" autocomplete="off" oninput="acShow('pMaker','makers')"><div class="ac-list" id="ac-pMaker"></div></div></div>
         <div class="field"><label class="flabel">타입</label>
           <div class="fselect-w"><select class="fselect" id="pType">
-            <option>베어링</option><option>스위치</option><option>벨트</option><option>앰프</option>
-            <option>센서</option><option>모터</option><option>케이블</option>
+            <option>베어링</option><option>오일/윤활</option><option>벨트</option><option>필터</option>
+            <option>센서</option><option>모터</option><option>밸브</option>
             <option>실린더</option><option>솔레노이드밸브</option><option>기타</option>
           </select></div>
         </div>
@@ -1195,7 +1277,11 @@ document.getElementById('topDate').textContent=localToday();
 let db=JSON.parse(localStorage.getItem('mms_v1')||'{"eqs":[],"maints":[],"parts":[],"insps":[],"inbounds":[],"events":[]}');
 if(!db.events) db.events=[];  // 기존 데이터 호환
 if(!db.inbounds) db.inbounds=[];
-function save(){localStorage.setItem('mms_v1',JSON.stringify(db));}
+function save(){
+  localStorage.setItem('mms_v1',JSON.stringify(db));
+  // Firestore 동기화 (Firebase 준비됐을 때만)
+  if(window.saveToFirestore) window.saveToFirestore(db);
+}
 
 // ── 탭 ──
 function gotoTab(n){
