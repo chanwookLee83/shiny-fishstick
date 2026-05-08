@@ -19,7 +19,7 @@
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAaqbae8isyjMsCbO7mhPjQSI0DlBwJ_Sk",
@@ -35,51 +35,63 @@ const app = initializeApp(firebaseConfig);
 const fdb = getFirestore(app);
 const DOC_REF = doc(fdb, 'mms', 'maindb');
 
-// Firestore → 앱으로 실시간 수신
-let isSyncing = false;
+let lastSaveAt = 0;
+let saveTimer = null;
+
+// ── Firestore → 앱 실시간 수신 ──
 onSnapshot(DOC_REF, (snap) => {
   if (!snap.exists()) return;
   const data = snap.data();
   if (!data || !data.db) return;
-  // 내가 방금 올린 데이터면 무시 (무한루프 방지)
-  if (isSyncing) return;
-  // 로컬보다 서버가 최신이면 업데이트
-  const serverDb = JSON.parse(data.db);
-  if (data.updatedAt > (window._lastSaveAt || 0)) {
-    window.db = serverDb;
-    localStorage.setItem('mms_v1', data.db);
-    if (window.db.events === undefined) window.db.events = [];
-    if (window.db.inbounds === undefined) window.db.inbounds = [];
-    // UI 갱신
-    if (typeof renderEqList === 'function') {
-      renderEqList();
-      renderMaintLog();
-      renderParts();
-      renderInsp();
-      checkAlarms();
-      updateEvBadge();
+
+  // 내가 방금 저장한 거면 무시 (1초 이내)
+  if (data.updatedAt && data.updatedAt <= lastSaveAt + 1000) return;
+
+  try {
+    const serverDb = JSON.parse(data.db);
+    // 실제 앱 db 변수에 반영
+    if (typeof db !== 'undefined') {
+      db.eqs = serverDb.eqs || [];
+      db.maints = serverDb.maints || [];
+      db.parts = serverDb.parts || [];
+      db.insps = serverDb.insps || [];
+      db.inbounds = serverDb.inbounds || [];
+      db.events = serverDb.events || [];
+      // localStorage도 갱신
+      localStorage.setItem('mms_v1', data.db);
+      // UI 전체 갱신
+      if (typeof renderEqList === 'function') {
+        renderEqList();
+        renderMaintLog();
+        renderParts();
+        renderInsp();
+        checkAlarms();
+        updateEvBadge();
+        showSyncBadge('🔄 동기화됨');
+      }
     }
-    showSyncBadge('🔄 동기화됨');
+  } catch(e) {
+    console.warn('sync parse error:', e);
   }
 });
 
-// 앱 → Firestore 저장
-window.saveToFirestore = async function(dbData) {
-  try {
-    isSyncing = true;
-    const now = Date.now();
-    window._lastSaveAt = now;
-    await setDoc(DOC_REF, {
-      db: JSON.stringify(dbData),
-      updatedAt: now
-    });
-    isSyncing = false;
-    showSyncBadge('☁️ 저장됨');
-  } catch(e) {
-    isSyncing = false;
-    showSyncBadge('⚠️ 오프라인');
-    console.warn('Firestore save failed:', e);
-  }
+// ── 앱 → Firestore 저장 (디바운스 500ms) ──
+window.saveToFirestore = function(dbData) {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try {
+      const now = Date.now();
+      lastSaveAt = now;
+      await setDoc(DOC_REF, {
+        db: JSON.stringify(dbData),
+        updatedAt: now
+      });
+      showSyncBadge('☁️ 저장됨');
+    } catch(e) {
+      showSyncBadge('⚠️ 오프라인');
+      console.warn('Firestore save failed:', e);
+    }
+  }, 500);
 };
 
 function showSyncBadge(msg) {
