@@ -19,7 +19,7 @@
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAaqbae8isyjMsCbO7mhPjQSI0DlBwJ_Sk",
@@ -37,29 +37,35 @@ const DOC_REF = doc(fdb, 'mms', 'maindb');
 
 let lastSaveAt = 0;
 let saveTimer = null;
+let lastServerAt = 0;
 
-// ── Firestore → 앱 실시간 수신 ──
-onSnapshot(DOC_REF, (snap) => {
-  if (!snap.exists()) return;
-  const data = snap.data();
-  if (!data || !data.db) return;
-
-  // 내가 방금 저장한 거면 무시 (1초 이내)
-  if (data.updatedAt && data.updatedAt <= lastSaveAt + 1000) return;
-
+// ── 폴링: 5초마다 Firestore 확인 ──
+async function pollFirestore() {
   try {
+    const snap = await getDoc(DOC_REF);
+    if (!snap.exists()) return;
+    const data = snap.data();
+    if (!data || !data.db) return;
+
+    const serverAt = data.updatedAt || 0;
+
+    // 내가 방금 저장한 거면 무시
+    if (serverAt <= lastSaveAt + 1000) return;
+    // 이미 반영한 데이터면 무시
+    if (serverAt <= lastServerAt) return;
+
+    lastServerAt = serverAt;
+
     const serverDb = JSON.parse(data.db);
-    // 실제 앱 db 변수에 반영
     if (typeof db !== 'undefined') {
-      db.eqs = serverDb.eqs || [];
-      db.maints = serverDb.maints || [];
-      db.parts = serverDb.parts || [];
-      db.insps = serverDb.insps || [];
+      db.eqs      = serverDb.eqs      || [];
+      db.maints   = serverDb.maints   || [];
+      db.parts    = serverDb.parts    || [];
+      db.insps    = serverDb.insps    || [];
       db.inbounds = serverDb.inbounds || [];
-      db.events = serverDb.events || [];
-      // localStorage도 갱신
+      db.events   = serverDb.events   || [];
       localStorage.setItem('mms_v1', data.db);
-      // UI 전체 갱신
+
       if (typeof renderEqList === 'function') {
         renderEqList();
         renderMaintLog();
@@ -71,9 +77,14 @@ onSnapshot(DOC_REF, (snap) => {
       }
     }
   } catch(e) {
-    console.warn('sync parse error:', e);
+    // 오프라인 등 오류 무시
   }
-});
+}
+
+// 5초마다 폴링
+setInterval(pollFirestore, 5000);
+// 앱 시작 시 즉시 한 번
+setTimeout(pollFirestore, 2000);
 
 // ── 앱 → Firestore 저장 (디바운스 500ms) ──
 window.saveToFirestore = function(dbData) {
@@ -82,6 +93,7 @@ window.saveToFirestore = function(dbData) {
     try {
       const now = Date.now();
       lastSaveAt = now;
+      lastServerAt = now;
       await setDoc(DOC_REF, {
         db: JSON.stringify(dbData),
         updatedAt: now
@@ -104,7 +116,7 @@ function showSyncBadge(msg) {
 }
 
 window._firebaseReady = true;
-console.log('Firebase 연동 완료');
+console.log('Firebase 폴링 연동 완료 (5초 간격)');
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Share+Tech+Mono&family=Barlow+Condensed:wght@500;600;700;900&display=swap');
