@@ -684,7 +684,7 @@ body.light .sec-title::after{background:#d4d9e2;}
     <div class="sec-title">장비 등록</div>
     <div class="card amber-t">
       <!-- 기본 정보 -->
-      <div style="font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin-bottom:8px;display:flex;align-items:center;gap:8px;">기본 정보<span style="flex:1;height:1px;background:var(--border);display:block;"></span></div>
+      <div style="font-family:var(--cond);font-size:14px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin-bottom:8px;display:flex;align-items:center;gap:8px;">기본 정보<span style="flex:1;height:1px;background:var(--border);display:block;"></span></div>
       <div class="field"><label class="flabel">장비명 *</label><div class="ac-wrap"><input class="finput" id="eqName" placeholder="예) 용접 로봇 #1" autocomplete="off" oninput="acShow('eqName','eqNames')"><div class="ac-list" id="ac-eqName"></div></div></div>
       <div class="frow">
         <div class="field"><label class="flabel">시리얼번호</label><div class="ac-wrap"><input class="finput" id="eqSerial" placeholder="예) WR-2024-001" autocomplete="off" oninput="acShow('eqSerial','eqSerials')"><div class="ac-list" id="ac-eqSerial"></div></div></div>
@@ -765,7 +765,7 @@ body.light .sec-title::after{background:#d4d9e2;}
           <div class="fselect-w"><select class="fselect" id="mType">
             <option value="예방">예방정비</option>
             <option value="고장">고장수리</option>
-            <option value="수정">프로그램수정</option>
+            <option value="수정">수정작업</option>
             <option value="개선">개선작업</option>
           </select></div>
         </div>
@@ -942,58 +942,9 @@ body.light .sec-title::after{background:#d4d9e2;}
       </div>
 
       <!-- 공압 패널 -->
-      <div class="chk-panel active" id="chk-pneumatic">
-        <div class="chk-section-title">공압 라인</div>
-        <div class="chk-item" id="ci-pn-0" onclick="toggleChk('pn',0)"><div class="chk-box" id="cb-pn-0"></div><div class="chk-text"><div class="chk-label">공압 공급 압력 확인</div><div class="chk-sub">정상 범위: 0.4~0.6 MPa</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('pn',0,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('pn',0,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-pn-1" onclick="toggleChk('pn',1)"><div class="chk-box" id="cb-pn-1"></div><div class="chk-text"><div class="chk-label">에어 필터 / 드레인 상태</div><div class="chk-sub">드레인 배출, 필터 막힘 여부</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('pn',1,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('pn',1,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-pn-2" onclick="toggleChk('pn',2)"><div class="chk-box" id="cb-pn-2"></div><div class="chk-text"><div class="chk-label">레귤레이터 설정값 확인</div><div class="chk-sub">각 유닛 설정압 일치 여부</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('pn',2,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('pn',2,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-pn-3" onclick="toggleChk('pn',3)"><div class="chk-box" id="cb-pn-3"></div><div class="chk-text"><div class="chk-label">배관 / 피팅 누기 점검</div><div class="chk-sub">비눗물 또는 청음기 사용</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('pn',3,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('pn',3,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-pn-4" onclick="toggleChk('pn',4)"><div class="chk-box" id="cb-pn-4"></div><div class="chk-text"><div class="chk-label">실린더 동작 속도 / 쿠션</div><div class="chk-sub">스트로크 끝단 쿠션 이상음 확인</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('pn',4,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('pn',4,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-pn-5" onclick="toggleChk('pn',5)"><div class="chk-box" id="cb-pn-5"></div><div class="chk-text"><div class="chk-label">솔레노이드 밸브 동작 확인</div><div class="chk-sub">수동 Override 동작 테스트</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('pn',5,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('pn',5,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-pn-6" onclick="toggleChk('pn',6)"><div class="chk-box" id="cb-pn-6"></div><div class="chk-text"><div class="chk-label">루브리케이터 오일 잔량</div><div class="chk-sub">적정 레벨 확인 및 보충</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('pn',6,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('pn',6,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-pn-7" onclick="toggleChk('pn',7)"><div class="chk-box" id="cb-pn-7"></div><div class="chk-text"><div class="chk-label">진공 발생기 / 흡착패드 상태</div><div class="chk-sub">패드 마모, 진공압 정상 여부</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('pn',7,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('pn',7,'ng',event)">NG</button></div></div>
-      </div>
-
-      <!-- 전기 패널 -->
-      <div class="chk-panel" id="chk-electric">
-        <div class="chk-section-title">전원 / 제어</div>
-        <div class="chk-item" id="ci-el-0" onclick="toggleChk('el',0)"><div class="chk-box" id="cb-el-0"></div><div class="chk-text"><div class="chk-label">전원 전압 측정</div><div class="chk-sub">AC 220V / DC 24V 레벨 확인</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('el',0,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('el',0,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-el-1" onclick="toggleChk('el',1)"><div class="chk-box" id="cb-el-1"></div><div class="chk-text"><div class="chk-label">NFB / 차단기 ON/OFF 확인</div><div class="chk-sub">각 차단기 트립 이력 점검</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('el',1,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('el',1,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-el-2" onclick="toggleChk('el',2)"><div class="chk-box" id="cb-el-2"></div><div class="chk-text"><div class="chk-label">제어반 내부 청결 / 발열</div><div class="chk-sub">먼지, 이물질, 과열 부위 확인</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('el',2,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('el',2,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-el-3" onclick="toggleChk('el',3)"><div class="chk-box" id="cb-el-3"></div><div class="chk-text"><div class="chk-label">단자대 / 커넥터 체결 상태</div><div class="chk-sub">이완, 산화, 절연 손상 점검</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('el',3,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('el',3,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-el-4" onclick="toggleChk('el',4)"><div class="chk-box" id="cb-el-4"></div><div class="chk-text"><div class="chk-label">접지 저항 측정</div><div class="chk-sub">10Ω 이하 확인</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('el',4,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('el',4,'ng',event)">NG</button></div></div>
-        <div class="chk-section-title">센서 / 드라이브</div>
-        <div class="chk-item" id="ci-el-5" onclick="toggleChk('el',5)"><div class="chk-box" id="cb-el-5"></div><div class="chk-text"><div class="chk-label">센서 신호 정상 출력 확인</div><div class="chk-sub">PLC I/O 모니터링 점검</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('el',5,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('el',5,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-el-6" onclick="toggleChk('el',6)"><div class="chk-box" id="cb-el-6"></div><div class="chk-text"><div class="chk-label">인버터 / 서보 드라이브 알람</div><div class="chk-sub">경보 이력 확인 및 초기화</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('el',6,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('el',6,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-el-7" onclick="toggleChk('el',7)"><div class="chk-box" id="cb-el-7"></div><div class="chk-text"><div class="chk-label">케이블 덕트 / 케이블 베어 상태</div><div class="chk-sub">피복 손상, 꺾임, 고정 이상 확인</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('el',7,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('el',7,'ng',event)">NG</button></div></div>
-      </div>
-
-      <!-- 외관 패널 -->
-      <div class="chk-panel" id="chk-visual">
-        <div class="chk-section-title">기구 / 구조물</div>
-        <div class="chk-item" id="ci-vs-0" onclick="toggleChk('vs',0)"><div class="chk-box" id="cb-vs-0"></div><div class="chk-text"><div class="chk-label">프레임 / 볼트 체결 상태</div><div class="chk-sub">느슨해진 볼트 조임 및 부식 확인</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('vs',0,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('vs',0,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-vs-1" onclick="toggleChk('vs',1)"><div class="chk-box" id="cb-vs-1"></div><div class="chk-text"><div class="chk-label">커버 / 가드 파손 여부</div><div class="chk-sub">안전 커버 장착 상태 점검</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('vs',1,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('vs',1,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-vs-2" onclick="toggleChk('vs',2)"><div class="chk-box" id="cb-vs-2"></div><div class="chk-text"><div class="chk-label">이물질 / 칩 퇴적 상태</div><div class="chk-sub">가동부 주변 청소 및 확인</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('vs',2,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('vs',2,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-vs-3" onclick="toggleChk('vs',3)"><div class="chk-box" id="cb-vs-3"></div><div class="chk-text"><div class="chk-label">오일 / 그리스 누유 확인</div><div class="chk-sub">베어링, 감속기, 배관 주변 점검</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('vs',3,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('vs',3,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-vs-4" onclick="toggleChk('vs',4)"><div class="chk-box" id="cb-vs-4"></div><div class="chk-text"><div class="chk-label">표시등 / HMI 패널 상태</div><div class="chk-sub">파손, 점등 불량, 오염 확인</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('vs',4,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('vs',4,'ng',event)">NG</button></div></div>
-        <div class="chk-section-title">마모 / 소모품</div>
-        <div class="chk-item" id="ci-vs-5" onclick="toggleChk('vs',5)"><div class="chk-box" id="cb-vs-5"></div><div class="chk-text"><div class="chk-label">벨트 / 체인 장력 및 마모</div><div class="chk-sub">처짐량, 균열, 이물 끼임 확인</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('vs',5,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('vs',5,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-vs-6" onclick="toggleChk('vs',6)"><div class="chk-box" id="cb-vs-6"></div><div class="chk-text"><div class="chk-label">LM 가이드 / 볼스크류 상태</div><div class="chk-sub">그리스 상태, 이물 유입 점검</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('vs',6,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('vs',6,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-vs-7" onclick="toggleChk('vs',7)"><div class="chk-box" id="cb-vs-7"></div><div class="chk-text"><div class="chk-label">방진 / 방음재 이상 여부</div><div class="chk-sub">탈락, 파손, 열화 상태 확인</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('vs',7,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('vs',7,'ng',event)">NG</button></div></div>
-      </div>
-
-      <!-- F/Proof 패널 -->
-      <div class="chk-panel" id="chk-fproof">
-        <div class="chk-section-title">안전 장치</div>
-        <div class="chk-item" id="ci-fp-0" onclick="toggleChk('fp',0)"><div class="chk-box" id="cb-fp-0"></div><div class="chk-text"><div class="chk-label">비상정지(EMO) 동작 확인</div><div class="chk-sub">전 구간 E-STOP 실제 동작 테스트</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('fp',0,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('fp',0,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-fp-1" onclick="toggleChk('fp',1)"><div class="chk-box" id="cb-fp-1"></div><div class="chk-text"><div class="chk-label">안전 도어 인터락 동작</div><div class="chk-sub">도어 열림 시 정지 여부 확인</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('fp',1,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('fp',1,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-fp-2" onclick="toggleChk('fp',2)"><div class="chk-box" id="cb-fp-2"></div><div class="chk-text"><div class="chk-label">광전 센서(라이트 커튼) 점검</div><div class="chk-sub">차광 시 즉시 정지 동작 확인</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('fp',2,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('fp',2,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-fp-3" onclick="toggleChk('fp',3)"><div class="chk-box" id="cb-fp-3"></div><div class="chk-text"><div class="chk-label">과부하 / 과전류 보호 동작</div><div class="chk-sub">모터 열동 계전기 설정값 확인</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('fp',3,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('fp',3,'ng',event)">NG</button></div></div>
-        <div class="chk-section-title">Fool-Proof 기구</div>
-        <div class="chk-item" id="ci-fp-4" onclick="toggleChk('fp',4)"><div class="chk-box" id="cb-fp-4"></div><div class="chk-text"><div class="chk-label">치구 / 지그 형상 이상 감지</div><div class="chk-sub">W/P 역삽 방지 핀·블록 상태 확인</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('fp',4,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('fp',4,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-fp-5" onclick="toggleChk('fp',5)"><div class="chk-box" id="cb-fp-5"></div><div class="chk-text"><div class="chk-label">클램프 미착 감지 센서</div><div class="chk-sub">클램프 Open 상태 기동 방지 확인</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('fp',5,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('fp',5,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-fp-6" onclick="toggleChk('fp',6)"><div class="chk-box" id="cb-fp-6"></div><div class="chk-text"><div class="chk-label">이중화 확인 센서 정합성</div><div class="chk-sub">Primary / Secondary 신호 일치 여부</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('fp',6,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('fp',6,'ng',event)">NG</button></div></div>
-        <div class="chk-item" id="ci-fp-7" onclick="toggleChk('fp',7)"><div class="chk-box" id="cb-fp-7"></div><div class="chk-text"><div class="chk-label">알람 / 에러 코드 이력 확인</div><div class="chk-sub">PLC 알람 로그 확인 및 원인 조치</div></div><div class="chk-status-btns"><button class="chk-ok" onclick="setChk('fp',7,'ok',event)">OK</button><button class="chk-ng" onclick="setChk('fp',7,'ng',event)">NG</button></div></div>
+      <!-- 체크 패널 - 동적 렌더링 -->
+      <div id="chk-panels-container">
+        <!-- JS에서 renderChkPanels()로 생성 -->
       </div>
 
       <!-- 최종 판정 -->
@@ -1205,7 +1156,28 @@ body.light .sec-title::after{background:#d4d9e2;}
   </div>
 </div>
 
-<!-- ══════ 점검 목록 수정 ══════ -->
+<!-- 점검 기록 수정 모달 -->
+<div class="modal-bg" id="inspEditModal" onclick="closeModal('inspEditModal',event)">
+  <div class="modal">
+    <div class="modal-title">📋 점검 기록 수정 <button class="modal-close" onclick="closeModal('inspEditModal')">✕</button></div>
+    <div class="frow">
+      <div class="field"><label class="flabel">점검일</label><input class="finput" id="eInspDate" type="date"></div>
+      <div class="field"><label class="flabel">점검자</label><input class="finput" id="eInspWorker" autocomplete="off"></div>
+    </div>
+    <div class="field"><label class="flabel">특이사항</label><textarea class="ftextarea" id="eInspNote"></textarea></div>
+    <div class="field"><label class="flabel">최종 판정</label>
+      <div class="frow">
+        <button id="eVerdictOK" onclick="setEVerdict('OK')" style="flex:1;border-radius:8px;padding:12px;font-family:var(--cond);font-size:16px;font-weight:900;cursor:pointer;border:2px solid var(--border2);background:var(--bg);color:var(--muted);">✅ OK</button>
+        <button id="eVerdictNG" onclick="setEVerdict('NG')" style="flex:1;border-radius:8px;padding:12px;font-family:var(--cond);font-size:16px;font-weight:900;cursor:pointer;border:2px solid var(--border2);background:var(--bg);color:var(--muted);">❌ NG</button>
+      </div>
+    </div>
+    <input type="hidden" id="eInspVerdict">
+    <input type="hidden" id="eInspIdx">
+    <button class="btn-primary" onclick="saveInspEdit()">💾 저장</button>
+  </div>
+</div>
+
+<!-- 점검 목록 수정 ══════ -->
 <div id="chkEditModal" class="modal-bg" onclick="closeModal('chkEditModal',event)">
   <div class="modal">
     <div class="modal-title">📋 점검 목록 수정 <button class="modal-close" onclick="closeModal('chkEditModal')">✕</button></div>
@@ -2505,6 +2477,7 @@ function drawTypeChart(){
 
 // ══════ 점검 ══════
 function renderInsp(){
+  renderChkPanels();
   populateInspChkEq();
   document.getElementById('inspChkDate').value=localToday();
   // 필터 셀렉트 초기화
@@ -2618,6 +2591,7 @@ function renderInspLog(){
         </div>
         <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;">
           ${hasChk?`<button class="btn-sm bsm-b" onclick="toggleInspDetail(${i})">📋</button>`:''}
+          <button class="btn-sm bsm-a" onclick="openInspEdit(${i})">✏️</button>
           <button class="btn-sm bsm-r" onclick="deleteInsp(${i})">DEL</button>
         </div>
       </div>
@@ -2628,11 +2602,36 @@ function renderInspLog(){
 }
 
 // ══════ 정기점검 체크리스트 ══════
-// 상태 저장: {pn:{0:'ok'|'ng'|null,...}, el:{...}, vs:{...}, fp:{...}}
-let chkState = {pn:{},el:{},vs:{},fp:{}};
-const CHK_CATS = ['pn','el','vs','fp'];
-const CHK_CAT_IDS = {pn:'pneumatic',el:'electric',vs:'visual',fp:'fproof'};
-const CHK_COUNTS = {pn:8,el:8,vs:8,fp:8};
+const CHK_CAT_IDS={pn:'pneumatic',el:'electric',vs:'visual',fp:'fproof'};
+let CHK_COUNTS={pn:8,el:8,vs:8,fp:8};
+const CHK_CATS=['pn','el','vs','fp'];
+
+function renderChkPanels(){
+  const catMap={pn:'pneumatic',el:'electric',vs:'visual',fp:'fproof'};
+  const catLabel={pn:'🔧 공압',el:'⚡ 전기',vs:'🔩 외관',fp:'🛠 F/Proof'};
+  const container=document.getElementById('chk-panels-container');
+  if(!container)return;
+
+  container.innerHTML=CHK_CATS.map((cat,ci)=>{
+    const data=getChkData(cat);
+    CHK_COUNTS[cat]=data.labels.length;
+    const items=data.labels.map((label,i)=>`
+      <div class="chk-item" id="ci-${cat}-${i}" onclick="toggleChk('${cat}',${i})">
+        <div class="chk-box" id="cb-${cat}-${i}"></div>
+        <div class="chk-text">
+          <div class="chk-label">${label}</div>
+          <div class="chk-sub">${data.subs[i]||''}</div>
+        </div>
+        <div class="chk-status-btns">
+          <button class="chk-ok" onclick="setChk('${cat}',${i},'ok',event)">OK</button>
+          <button class="chk-ng" onclick="setChk('${cat}',${i},'ng',event)">NG</button>
+        </div>
+      </div>`).join('');
+    return `<div class="chk-panel${ci===0?' active':''}" id="chk-${catMap[cat]}">${items}</div>`;
+  }).join('');
+}
+
+let chkState={pn:{},el:{},vs:{},fp:{}};
 
 function onInspEqChange(){resetChkList();}
 
@@ -2984,8 +2983,16 @@ function openChkEdit(){openModal('chkEditModal');renderChkEditList();}
 
 function getChkData(cat){
   const custom=db.customChk[cat];
-  if(custom) return custom;
+  if(custom) return {labels:[...custom.labels],subs:[...custom.subs]};
   return {labels:[...DEFAULT_CHK[cat].labels],subs:[...DEFAULT_CHK[cat].subs]};
+}
+
+function saveChkData(cat, data){
+  db.customChk[cat]={labels:[...data.labels],subs:[...data.subs]};
+  CHK_COUNTS[cat]=data.labels.length;
+  save();
+  renderChkPanels(); // ← 메인 체크리스트 즉시 반영
+  renderChkEditList();
 }
 
 function renderChkEditList(){
@@ -3028,19 +3035,14 @@ function saveChkItem(cat,i){
   const data=getChkData(cat);
   data.labels[i]=label;
   data.subs[i]=sub;
-  if(!db.customChk[cat])db.customChk[cat]={labels:[...DEFAULT_CHK[cat].labels],subs:[...DEFAULT_CHK[cat].subs]};
-  db.customChk[cat]=data;
-  save();renderChkEditList();toast('✅ 수정 완료');
+  saveChkData(cat,data);
+  toast('✅ 수정 완료');
 }
 function deleteChkItem(cat,idx){
   const data=getChkData(cat);
   data.labels.splice(idx,1);
   data.subs.splice(idx,1);
-  if(!db.customChk[cat])db.customChk[cat]={labels:[...DEFAULT_CHK[cat].labels],subs:[...DEFAULT_CHK[cat].subs]};
-  db.customChk[cat]=data;
-  save();renderChkEditList();
-  // 체크리스트 카운트 업데이트
-  CHK_COUNTS[cat]=data.labels.length;
+  saveChkData(cat,data);
   toast('삭제됨');
 }
 
@@ -3052,10 +3054,7 @@ function addChkItem(){
   const data=getChkData(cat);
   data.labels.push(label);
   data.subs.push(sub);
-  if(!db.customChk[cat])db.customChk[cat]={labels:[...DEFAULT_CHK[cat].labels],subs:[...DEFAULT_CHK[cat].subs]};
-  db.customChk[cat]=data;
-  CHK_COUNTS[cat]=data.labels.length;
-  save();renderChkEditList();
+  saveChkData(cat,data);
   document.getElementById('chkNewLabel').value='';
   document.getElementById('chkNewSub').value='';
   toast('✅ 항목 추가됨: '+label);
@@ -3066,7 +3065,10 @@ function resetChkToDefault(){
   const cat=document.getElementById('chkEditCat').value;
   delete db.customChk[cat];
   CHK_COUNTS[cat]=8;
-  save();renderChkEditList();toast('↺ 기본값으로 초기화됨');
+  save();
+  renderChkPanels();
+  renderChkEditList();
+  toast('↺ 기본값으로 초기화됨');
 }
 
 // 커스텀 체크리스트 항목 가져오기 (렌더링 시 사용)
@@ -3220,6 +3222,44 @@ function renderEvents(){
       </div>`;
     }).join('')}`;
   }).join('');
+}
+
+function openInspEdit(i){
+  const d=db.insps[i];
+  if(!d)return;
+  document.getElementById('eInspDate').value=d.date||'';
+  document.getElementById('eInspWorker').value=d.worker||'';
+  document.getElementById('eInspNote').value=d.note||'';
+  document.getElementById('eInspIdx').value=i;
+  document.getElementById('eInspVerdict').value=d.verdict||'';
+  // 판정 버튼 초기화
+  setEVerdict(d.verdict||'');
+  openModal('inspEditModal');
+}
+function setEVerdict(v){
+  document.getElementById('eInspVerdict').value=v;
+  const okBtn=document.getElementById('eVerdictOK');
+  const ngBtn=document.getElementById('eVerdictNG');
+  if(v==='OK'){
+    okBtn.style.cssText='flex:1;border-radius:8px;padding:12px;font-family:var(--cond);font-size:16px;font-weight:900;cursor:pointer;border:2px solid var(--green);background:#10b98115;color:var(--green);';
+    ngBtn.style.cssText='flex:1;border-radius:8px;padding:12px;font-family:var(--cond);font-size:16px;font-weight:900;cursor:pointer;border:2px solid var(--border2);background:var(--bg);color:var(--muted);';
+  } else if(v==='NG'){
+    ngBtn.style.cssText='flex:1;border-radius:8px;padding:12px;font-family:var(--cond);font-size:16px;font-weight:900;cursor:pointer;border:2px solid var(--red);background:#ef444415;color:var(--red);';
+    okBtn.style.cssText='flex:1;border-radius:8px;padding:12px;font-family:var(--cond);font-size:16px;font-weight:900;cursor:pointer;border:2px solid var(--border2);background:var(--bg);color:var(--muted);';
+  } else {
+    okBtn.style.cssText='flex:1;border-radius:8px;padding:12px;font-family:var(--cond);font-size:16px;font-weight:900;cursor:pointer;border:2px solid var(--border2);background:var(--bg);color:var(--muted);';
+    ngBtn.style.cssText='flex:1;border-radius:8px;padding:12px;font-family:var(--cond);font-size:16px;font-weight:900;cursor:pointer;border:2px solid var(--border2);background:var(--bg);color:var(--muted);';
+  }
+}
+function saveInspEdit(){
+  const i=parseInt(document.getElementById('eInspIdx').value);
+  if(isNaN(i)||!db.insps[i])return;
+  db.insps[i].date=document.getElementById('eInspDate').value;
+  db.insps[i].worker=document.getElementById('eInspWorker').value.trim();
+  db.insps[i].note=document.getElementById('eInspNote').value.trim();
+  db.insps[i].verdict=document.getElementById('eInspVerdict').value;
+  save();closeModal('inspEditModal');renderInspLog();populateInspFilters();
+  toast('✅ 점검 기록 수정 완료');
 }
 
 function toggleInspDetail(i){
