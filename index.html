@@ -411,7 +411,7 @@ canvas{display:block;width:100%!important;}
 body.light .finput::placeholder,body.light .ftextarea::placeholder{color:#9ca3af;}
 body.light .finput,body.light .fselect,body.light .ftextarea{background:#f9fafb;color:#111827;border-color:#b8c0cc;}
 body.light .finput:focus,body.light .fselect:focus,body.light .ftextarea:focus{border-color:var(--amber);box-shadow:0 0 0 3px #c47f0015;}
-body.light .ac-list{background:#fff;border-color:var(--amber);box-shadow:0 8px 24px #00000020;}
+body.light 
 body.light .ac-item{color:#111827;border-color:#e5e7eb;}
 body.light .ac-item:hover{background:#f3f4f6;color:var(--amber);}
 body.light mark{background:transparent;color:var(--amber);font-weight:700;}
@@ -472,7 +472,23 @@ body.light .grade-btn.sel-C{background:#0a916815;border-color:var(--green);color
 body.light .grade-table td{color:#111827;}
 body.light .gt-desc{color:#4b5563;}
 body.light .empty{color:#6b7280;}
-body.light canvas{background:#ffffff;border-radius:8px;}
+/* 검색 하이라이트 */
+mark.hl-match{
+  background:#f59e0b35;
+  color:#f59e0b;
+  border-radius:3px;
+  padding:1px 3px;
+  font-weight:700;
+  border-bottom:2px solid #f59e0b60;
+}
+body.light mark.hl-match{
+  background:#c47f0025;
+  color:#c47f00;
+  border-radius:3px;
+  padding:1px 3px;
+  font-weight:700;
+  border-bottom:2px solid #c47f0070;
+}
 body.light .topbar::after{background:linear-gradient(90deg,transparent,var(--amber),transparent);}
 body.light .sec-title::after{background:#d4d9e2;}
 
@@ -480,9 +496,9 @@ body.light .sec-title::after{background:#d4d9e2;}
 .ev-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;border-left:4px solid var(--blue);position:relative;}
 .ev-card.cat-PM{border-left-color:#f59e0b;}
 .ev-card.cat-교육{border-left-color:#8b5cf6;}
-.ev-card.cat-신뢰성TEST{border-left-color:#06b6d4;}
-.ev-card.cat-장비{border-left-color:#10b981;}
-.ev-card.cat-개{border-left-color:#ef4444;}
+.ev-card.cat-회의{border-left-color:#06b6d4;}
+.ev-card.cat-설비{border-left-color:#10b981;}
+.ev-card.cat-안전{border-left-color:#ef4444;}
 .ev-card.cat-기타{border-left-color:#6b7280;}
 .ev-card.past{opacity:.55;}
 .ev-dday{font-family:var(--mono);font-size:12px;font-weight:700;padding:2px 7px;border-radius:4px;flex-shrink:0;}
@@ -685,7 +701,7 @@ body.light .sec-title::after{background:#d4d9e2;}
     <div class="sec-title">장비 등록</div>
     <div class="card amber-t">
       <!-- 기본 정보 -->
-      <div style="font-family:var(--cond);font-size:14px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin-bottom:8px;display:flex;align-items:center;gap:8px;">기본 정보<span style="flex:1;height:1px;background:var(--border);display:block;"></span></div>
+      <div style="font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin-bottom:8px;display:flex;align-items:center;gap:8px;">기본 정보<span style="flex:1;height:1px;background:var(--border);display:block;"></span></div>
       <div class="field"><label class="flabel">장비명 *</label><div class="ac-wrap"><input class="finput" id="eqName" placeholder="예) 용접 로봇 #1" autocomplete="off" oninput="acShow('eqName','eqNames')"><div class="ac-list" id="ac-eqName"></div></div></div>
       <div class="frow">
         <div class="field"><label class="flabel">시리얼번호</label><div class="ac-wrap"><input class="finput" id="eqSerial" placeholder="예) WR-2024-001" autocomplete="off" oninput="acShow('eqSerial','eqSerials')"><div class="ac-list" id="ac-eqSerial"></div></div></div>
@@ -707,7 +723,7 @@ body.light .sec-title::after{background:#d4d9e2;}
       </div>
 
       <!-- 장비 등급 -->
-      <div style="font-family:var(--cond);font-size:14px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin:12px 0 8px;display:flex;align-items:center;gap:8px;">🏅 장비 등급<span style="flex:1;height:1px;background:var(--border);display:block;"></span><button onclick="openGradeGuide()" style="background:none;border:1px solid var(--border2);border-radius:5px;color:var(--muted2);font-family:var(--cond);font-size:9px;font-weight:700;padding:2px 8px;cursor:pointer;letter-spacing:1px;">기준표 ▸</button></div>
+      <div style="font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin:12px 0 8px;display:flex;align-items:center;gap:8px;">🏅 장비 등급<span style="flex:1;height:1px;background:var(--border);display:block;"></span><button onclick="openGradeGuide()" style="background:none;border:1px solid var(--border2);border-radius:5px;color:var(--muted2);font-family:var(--cond);font-size:9px;font-weight:700;padding:2px 8px;cursor:pointer;letter-spacing:1px;">기준표 ▸</button></div>
       <input type="hidden" id="eqGrade" value="">
       <div class="grade-selector">
         <div class="grade-btn" id="gbtn-S" onclick="selectGrade('eqGrade','S')">S<div style="font-size:8px;font-weight:400;margin-top:2px;letter-spacing:0;">최우선</div></div>
@@ -717,7 +733,7 @@ body.light .sec-title::after{background:#d4d9e2;}
       </div>
 
       <!-- 전기 사양 -->
-      <div style="font-family:var(--cond);font-size:14px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin:12px 0 8px;display:flex;align-items:center;gap:8px;">⚡ 전기 사양<span style="flex:1;height:1px;background:var(--border);display:block;"></span></div>
+      <div style="font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin:12px 0 8px;display:flex;align-items:center;gap:8px;">⚡ 전기 사양<span style="flex:1;height:1px;background:var(--border);display:block;"></span></div>
       <div class="field"><label class="flabel">전원 종류</label>
         <div class="fselect-w"><select class="fselect" id="eqPower">
           <option value="">미입력</option>
@@ -730,11 +746,11 @@ body.light .sec-title::after{background:#d4d9e2;}
       </div>
 
       <!-- 공압 사양 -->
-      <div style="font-family:var(--cond);font-size:14px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin:12px 0 8px;display:flex;align-items:center;gap:8px;">🔵 공압 사양<span style="flex:1;height:1px;background:var(--border);display:block;"></span></div>
+      <div style="font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin:12px 0 8px;display:flex;align-items:center;gap:8px;">🔵 공압 사양<span style="flex:1;height:1px;background:var(--border);display:block;"></span></div>
       <div class="field"><label class="flabel">사용 압력 (MPa)</label><input class="finput" id="eqAirPres" type="number" placeholder="예) 0.5" step="0.01" min="0" inputmode="decimal"></div>
 
       <!-- 비고 -->
-      <div style="font-family:var(--cond);font-size:14px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin:12px 0 8px;display:flex;align-items:center;gap:8px;">📝 비고<span style="flex:1;height:1px;background:var(--border);display:block;"></span></div>
+      <div style="font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin:12px 0 8px;display:flex;align-items:center;gap:8px;">📝 비고<span style="flex:1;height:1px;background:var(--border);display:block;"></span></div>
       <div class="field"><label class="flabel">메모</label><textarea class="ftextarea" id="eqMemo" placeholder="특이사항, 주의사항 등 자유롭게 입력..."></textarea></div>
 
       <button class="btn-primary" onclick="registerEq()">🏭 장비 등록</button>
@@ -766,8 +782,8 @@ body.light .sec-title::after{background:#d4d9e2;}
           <div class="fselect-w"><select class="fselect" id="mType">
             <option value="예방">예방정비</option>
             <option value="고장">고장수리</option>
-            <option value="수정">수정작업</option>
-            <option value="교체">소모품교체</option>
+            <option value="정기">정기점검</option>
+            <option value="개선">개선작업</option>
           </select></div>
         </div>
         <div class="field"><label class="flabel">작업자</label><div class="ac-wrap"><input class="finput" id="mWorker" placeholder="이름" autocomplete="off" oninput="acShow('mWorker','workers')"><div class="ac-list" id="ac-mWorker"></div></div></div>
@@ -803,7 +819,7 @@ body.light .sec-title::after{background:#d4d9e2;}
       <div class="fselect-w"><select class="fselect" id="mFilterEq" onchange="renderMaintLog()"><option value="">전체 장비</option></select></div>
       <div class="fselect-w"><select class="fselect" id="mFilterType" onchange="renderMaintLog()">
         <option value="">전체 유형</option>
-        <option>예방</option><option>고장</option><option>수정</option><option>교체</option>
+        <option>예방</option><option>고장</option><option>정기</option><option>개선</option>
       </select></div>
     </div>
     <div id="maintLog"><div class="empty"><span class="empty-icon">🔧</span>정비 이력 없음</div></div>
@@ -823,8 +839,8 @@ body.light .sec-title::after{background:#d4d9e2;}
         <div class="field"><label class="flabel">메이커</label><div class="ac-wrap"><input class="finput" id="pMaker" placeholder="예) SKF" autocomplete="off" oninput="acShow('pMaker','makers')"><div class="ac-list" id="ac-pMaker"></div></div></div>
         <div class="field"><label class="flabel">타입</label>
           <div class="fselect-w"><select class="fselect" id="pType">
-            <option>센서</option><option>스위치</option><option>전자코일</option><option>필터</option>
-            <option>가공품</option><option>모터</option><option>구매품</option>
+            <option>베어링</option><option>오일/윤활</option><option>벨트</option><option>필터</option>
+            <option>센서</option><option>모터</option><option>밸브</option>
             <option>실린더</option><option>솔레노이드밸브</option><option>기타</option>
           </select></div>
         </div>
@@ -862,12 +878,13 @@ body.light .sec-title::after{background:#d4d9e2;}
     <!-- 타입 필터 -->
     <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;" id="partTypeFilter">
       <button class="filter-chip active" data-type="ALL" onclick="setPartTypeFilter('ALL')">ALL</button>
+      <button class="filter-chip" data-type="베어링" onclick="setPartTypeFilter('베어링')">베어링</button>
+      <button class="filter-chip" data-type="오일/윤활" onclick="setPartTypeFilter('오일/윤활')">오일·윤활</button>
+      <button class="filter-chip" data-type="벨트" onclick="setPartTypeFilter('벨트')">벨트</button>
+      <button class="filter-chip" data-type="필터" onclick="setPartTypeFilter('필터')">필터</button>
       <button class="filter-chip" data-type="센서" onclick="setPartTypeFilter('센서')">센서</button>
-      <button class="filter-chip" data-type="스위치" onclick="setPartTypeFilter('스위치')">스위치</button>
-      <button class="filter-chip" data-type="전자코일" onclick="setPartTypeFilter('전자코일')">전자코일</button>
-      <button class="filter-chip" data-type="가공품" onclick="setPartTypeFilter('가공품')">가공품</button>
       <button class="filter-chip" data-type="모터" onclick="setPartTypeFilter('모터')">모터</button>
-      <button class="filter-chip" data-type="구매품" onclick="setPartTypeFilter('구매품')">구매품</button>
+      <button class="filter-chip" data-type="밸브" onclick="setPartTypeFilter('밸브')">밸브</button>
       <button class="filter-chip" data-type="실린더" onclick="setPartTypeFilter('실린더')">실린더</button>
       <button class="filter-chip" data-type="솔레노이드밸브" onclick="setPartTypeFilter('솔레노이드밸브')">솔레노이드</button>
       <button class="filter-chip" data-type="기타" onclick="setPartTypeFilter('기타')">기타</button>
@@ -926,7 +943,7 @@ body.light .sec-title::after{background:#d4d9e2;}
 
       <!-- 진행 요약 -->
       <div class="insp-summary-bar" id="inspSummaryBar">
-        <div class="insp-summary-title"style="font-size:15px;">진행 현황</div>
+        <div class="insp-summary-title">진행 현황</div>
         <div class="insp-summary-row"><span class="insp-summary-label">🔧 공압</span><div class="insp-summary-prog"><div class="insp-summary-fill" id="sp-pneumatic" style="width:0%;background:var(--blue)"></div></div><span class="insp-summary-count" id="sc-pneumatic">0 / 0</span></div>
         <div class="insp-summary-row"><span class="insp-summary-label">⚡ 전기</span><div class="insp-summary-prog"><div class="insp-summary-fill" id="sp-electric" style="width:0%;background:var(--amber)"></div></div><span class="insp-summary-count" id="sc-electric">0 / 0</span></div>
         <div class="insp-summary-row"><span class="insp-summary-label">🔩 외관</span><div class="insp-summary-prog"><div class="insp-summary-fill" id="sp-visual" style="width:0%;background:var(--green)"></div></div><span class="insp-summary-count" id="sc-visual">0 / 0</span></div>
@@ -949,7 +966,7 @@ body.light .sec-title::after{background:#d4d9e2;}
 
       <!-- 최종 판정 -->
       <div style="margin-top:14px;">
-        <div style="font-family:var(--cond);font-size:14px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin-bottom:10px;display:flex;align-items:center;gap:8px;">🏁 최종 판정<span style="flex:1;height:1px;background:var(--border);display:block;"></span><span id="verdictAutoNote" style="font-size:9px;color:var(--muted);letter-spacing:0;font-weight:400;"></span></div>
+        <div style="font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin-bottom:10px;display:flex;align-items:center;gap:8px;">🏁 최종 판정<span style="flex:1;height:1px;background:var(--border);display:block;"></span><span id="verdictAutoNote" style="font-size:9px;color:var(--muted);letter-spacing:0;font-weight:400;"></span></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
           <div id="verdict-ok-btn" onclick="setVerdict('OK')" style="border-radius:10px;padding:16px 8px;text-align:center;cursor:pointer;border:2px solid var(--border2);background:var(--card);transition:all .15s;user-select:none;">
             <div style="font-size:28px;margin-bottom:4px;">✅</div>
@@ -1002,7 +1019,7 @@ body.light .sec-title::after{background:#d4d9e2;}
 
     <!-- 월별 통계 -->
     <div id="inspMonthStats" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 13px;margin-bottom:10px;">
-      <div style="font-family:var(--cond);font-size:15px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin-bottom:8px;">📊 월별 통계</div>
+      <div style="font-family:var(--cond);font-size:10px;font-weight:700;letter-spacing:3px;color:var(--muted2);margin-bottom:8px;">📊 월별 통계</div>
       <div id="inspStatsContent"></div>
     </div>
 
@@ -1034,7 +1051,7 @@ body.light .sec-title::after{background:#d4d9e2;}
             <option value="교육">📚 교육</option>
             <option value="회의">💬 회의</option>
             <option value="설비">⚙️ 설비</option>
-            <option value="신뢰성TEST">🦺 신뢰성 TEST</option>
+            <option value="안전">🦺 안전</option>
             <option value="기타">📌 기타</option>
           </select></div>
         </div>
@@ -1414,8 +1431,8 @@ body.light .sec-title::after{background:#d4d9e2;}
       <div class="field"><label class="flabel">메이커</label><div class="ac-wrap"><input class="finput" id="ePMaker" autocomplete="off" oninput="acShow('ePMaker','makers')"><div class="ac-list" id="ac-ePMaker"></div></div></div>
       <div class="field"><label class="flabel">타입</label>
         <div class="fselect-w"><select class="fselect" id="ePType">
-          <option>센서</option><option>스위치</option><option>전자코일</option><option>가공품</option>
-          <option>모터</option><option>구매품</option><option>실린더</option><option>솔레노이드밸브</option><option>기타</option>
+          <option>베어링</option><option>오일/윤활</option><option>벨트</option><option>필터</option>
+          <option>센서</option><option>모터</option><option>밸브</option><option>기타</option>
         </select></div>
       </div>
     </div>
@@ -1442,8 +1459,8 @@ body.light .sec-title::after{background:#d4d9e2;}
         <div class="fselect-w"><select class="fselect" id="eMType">
           <option value="예방">예방정비</option>
           <option value="고장">고장수리</option>
-          <option value="수정">수정작업</option>
-          <option value="교체">소모품교체</option>
+          <option value="정기">정기점검</option>
+          <option value="개선">개선작업</option>
         </select></div>
       </div>
       <div class="field"><label class="flabel">작업자</label><div class="ac-wrap"><input class="finput" id="eMWorker" autocomplete="off" oninput="acShow('eMWorker','workers')"><div class="ac-list" id="ac-eMWorker"></div></div></div>
@@ -1630,7 +1647,7 @@ function setPartTypeFilter(type){
 function hlText(text, q){
   if(!q) return text;
   const re = new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');
-  return String(text).replace(re,'<mark style="background:#f59e0b20;color:var(--amber);border-radius:2px;padding:0 1px;">$1</mark>');
+  return String(text).replace(re,'<mark class="hl-match">$1</mark>');
 }
 
 // ══════ 장비 ══════
@@ -1679,7 +1696,7 @@ function acShow(inputId, sourceKey){
   if(!q){list.classList.remove('open');return;}
   const src=getAcSources()[sourceKey]||[];
   const escaped=q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-  const matched=src.filter(v=>v&&v.includes(q)).slice(0,8);
+  const matched=src.filter(v=>v&&v.toLowerCase().includes(q.toLowerCase())).slice(0,8);
   if(!matched.length){list.classList.remove('open');return;}
   list.innerHTML=matched.map(v=>{
     const hl=v.replace(new RegExp(escaped,'g'),`<mark>${q}</mark>`);
@@ -1691,8 +1708,9 @@ function acShow(inputId, sourceKey){
 function acPick(inputId, value){
   const inp=document.getElementById(inputId);
   const list=document.getElementById('ac-'+inputId);
-  if(inp){inp.value=value;inp.dispatchEvent(new Event('input'));}
+  if(inp){inp.value=value;}
   if(list) list.classList.remove('open');
+  acCloseAll();
 }
 
 function acCloseAll(exceptId=''){
@@ -2052,7 +2070,7 @@ function renderMaintLog(){
   if(!list.length){el.innerHTML='<div class="empty"><span class="empty-icon">🔧</span>정비 이력 없음</div>';return;}
   el.innerHTML=list.map((m,i)=>{
     const realIdx=db.maints.indexOf(m);
-    const typeColor={'예방':'g','고장':'r','수정':'b','교체':'a'}[m.type]||'';
+    const typeColor={'예방':'g','고장':'r','정기':'b','개선':'a'}[m.type]||'';
     return `
     <div class="mlog-item">
       <div class="mlog-head">
@@ -2461,7 +2479,7 @@ function drawTypeChart(){
   const bgCol=isLight?'#ffffff':'#181c22';
   const strokeCol=isLight?'#f0f4f8':'#0a0c0f';
   const countCol=isLight?'#c47f00':'#ffcb2b';
-  const types=['예방','고장','수정','교체'];
+  const types=['예방','고장','정기','개선'];
   const COLS=['#10b981','#ef4444','#3b82f6','#f59e0b'];
   const counts=types.map(t=>db.maints.filter(m=>m.type===t).length);
   const total=counts.reduce((a,b)=>a+b,0);
@@ -3207,7 +3225,7 @@ function renderEvents(){
     const isPast=date<today;
     const dateLabel=isToday?`📍 오늘 · ${date}`:isPast?`· ${date}`:date;
     return `
-    <div style="font-family:var(--cond);font-size:12px;font-weight:700;letter-spacing:3px;color:${isToday?'var(--amber)':isPast?'var(--muted)':'var(--blue)'};margin:10px 0 6px;display:flex;align-items:center;gap:8px;">
+    <div style="font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:3px;color:${isToday?'var(--amber)':isPast?'var(--muted)':'var(--blue)'};margin:10px 0 6px;display:flex;align-items:center;gap:8px;">
       ${dateLabel}<span style="flex:1;height:1px;background:var(--border);display:block;"></span>
     </div>
     ${evs.map(ev=>{
