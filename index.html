@@ -224,8 +224,8 @@ body{font-family:var(--sans);color:var(--text);display:flex;flex-direction:colum
 /* KPI */
 .kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;}
 .kpi-box{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px;}
-.kpi-label{font-family:var(--cond);font-size:13px;font-weight:700;letter-spacing:2px;color:var(--muted);margin-bottom:5px;}
-.kpi-val{font-family:var(--mono);font-size:28px;font-weight:bold;}
+.kpi-label{font-family:var(--cond);font-size:14px;font-weight:700;letter-spacing:2px;color:var(--muted);margin-bottom:5px;}
+.kpi-val{font-family:var(--mono);font-size:30px;font-weight:bold;}
 .kpi-sub{font-family:var(--mono);font-size:13px;color:var(--muted);margin-top:3px;}
 
 /* EQUIPMENT CARD */
@@ -602,8 +602,8 @@ body.light .sec-title::after{background:#d4d9e2;}
   .sec-title{font-size:14px;letter-spacing:4px;margin-bottom:12px;}
   .sec{margin-bottom:22px;}
   .card{padding:20px;border-radius:12px;}
-  .kpi-label{font-size:13px;}
-  .kpi-val{font-size:32px;}
+  .kpi-label{font-size:14px;}
+  .kpi-val{font-size:34px;}
   .kpi-sub{font-size:13px;}
   .kpi-box{padding:16px;}
   .flabel{font-size:13px;margin-bottom:7px;}
@@ -829,6 +829,18 @@ body.light .ac-item:hover{background:#f3f4f6;color:var(--amber);}
         <option>예방</option><option>고장</option><option>정기</option><option>개선</option>
       </select></div>
     </div>
+    <!-- 날짜 필터 -->
+    <div class="frow" style="margin-bottom:10px;">
+      <div class="field" style="margin-bottom:0;">
+        <label class="flabel">시작일</label>
+        <input class="finput" id="mFilterDateFrom" type="date" onchange="renderMaintLog()" style="font-size:13px;padding:8px 10px;">
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label class="flabel">종료일</label>
+        <input class="finput" id="mFilterDateTo" type="date" onchange="renderMaintLog()" style="font-size:13px;padding:8px 10px;">
+      </div>
+      <button class="btn-sm bsm-r" style="margin-top:18px;flex-shrink:0;" onclick="clearMaintDateFilter()">↺</button>
+    </div>
     <div id="maintLog"><div class="empty"><span class="empty-icon">🔧</span>정비 이력 없음</div></div>
   </div>
 </div>
@@ -903,7 +915,22 @@ body.light .ac-item:hover{background:#f3f4f6;color:var(--amber);}
 
 <!-- ══════ 통계 ══════ -->
 <div class="page" id="page-stats">
+  <!-- 날짜 필터 -->
   <div class="sec" style="margin-top:4px;">
+    <div class="sec-title">기간 필터</div>
+    <div class="frow" style="margin-bottom:0;">
+      <div class="field" style="margin-bottom:0;">
+        <label class="flabel">시작일</label>
+        <input class="finput" id="sFilterDateFrom" type="date" onchange="renderStats()" style="font-size:13px;padding:8px 10px;">
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label class="flabel">종료일</label>
+        <input class="finput" id="sFilterDateTo" type="date" onchange="renderStats()" style="font-size:13px;padding:8px 10px;">
+      </div>
+      <button class="btn-sm bsm-r" style="margin-top:18px;flex-shrink:0;" onclick="clearStatsDateFilter()">↺</button>
+    </div>
+  </div>
+  <div class="sec">
     <div class="sec-title">전체 KPI</div>
     <div class="kpi-grid">
       <div class="kpi-box" style="border-top:2px solid var(--amber)"><div class="kpi-label">TOTAL 장비</div><div class="kpi-val" style="color:var(--amber)" id="k-eq">0</div><div class="kpi-sub">대</div></div>
@@ -2066,14 +2093,24 @@ function clearMaintForm(){
   document.getElementById('mEnd').value='';
   useParts=[];renderUseParts();
 }
+function clearMaintDateFilter(){
+  const f=document.getElementById('mFilterDateFrom');
+  const t=document.getElementById('mFilterDateTo');
+  if(f)f.value=''; if(t)t.value='';
+  renderMaintLog();
+}
 function renderMaintLog(){
   const el=document.getElementById('maintLog');
-  const fEq=document.getElementById('mFilterEq')?.value;
-  const fType=document.getElementById('mFilterType')?.value;
+  const fEq=document.getElementById('mFilterEq')?.value||'';
+  const fType=document.getElementById('mFilterType')?.value||'';
+  const fFrom=document.getElementById('mFilterDateFrom')?.value||'';
+  const fTo=document.getElementById('mFilterDateTo')?.value||'';
   let list=db.maints.filter(m=>{
     const me=!fEq||m.eqId==fEq;
     const mt=!fType||m.type===fType;
-    return me&&mt;
+    const mf=!fFrom||m.date>=fFrom;
+    const mto=!fTo||m.date<=fTo;
+    return me&&mt&&mf&&mto;
   });
   if(!list.length){el.innerHTML='<div class="empty"><span class="empty-icon">🔧</span>정비 이력 없음</div>';return;}
   el.innerHTML=list.map((m,i)=>{
@@ -2368,11 +2405,25 @@ function calcMTTR(eqId){
 }
 
 // ══════ 통계 ══════
+function clearStatsDateFilter(){
+  const f=document.getElementById('sFilterDateFrom');
+  const t=document.getElementById('sFilterDateTo');
+  if(f)f.value=''; if(t)t.value='';
+  renderStats();
+}
 function renderStats(){
+  const fFrom=document.getElementById('sFilterDateFrom')?.value||'';
+  const fTo=document.getElementById('sFilterDateTo')?.value||'';
+  // 날짜 필터 적용된 정비 목록
+  const filteredMaints=db.maints.filter(m=>{
+    const mf=!fFrom||m.date>=fFrom;
+    const mt=!fTo||m.date<=fTo;
+    return mf&&mt;
+  });
   document.getElementById('k-eq').textContent=db.eqs.length;
-  document.getElementById('k-maint').textContent=db.maints.length;
-  document.getElementById('k-fail').textContent=db.maints.filter(m=>m.type==='고장').length;
-  document.getElementById('k-cost').textContent=fmtCost(db.maints.reduce((s,m)=>s+(m.partCost||0),0));
+  document.getElementById('k-maint').textContent=filteredMaints.length;
+  document.getElementById('k-fail').textContent=filteredMaints.filter(m=>m.type==='고장').length;
+  document.getElementById('k-cost').textContent=fmtCost(filteredMaints.reduce((s,m)=>s+(m.partCost||0),0));
 
   // MTBF/MTTR 목록
   const mtEl=document.getElementById('mtbfList');
