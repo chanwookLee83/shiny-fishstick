@@ -2392,17 +2392,8 @@ function deleteInbound(id, pidx){
 
 // ══════ MTBF / MTTR ══════
 function calcMTBF(eqId){
-  const eq=db.eqs.find(e=>e.id===eqId);
   const fails=db.maints.filter(m=>m.eqId===eqId&&m.type==='고장').sort((a,b)=>new Date(a.date)-new Date(b.date));
-  if(!fails.length) return null;
-  // 1건: 설치일~첫 고장 기준
-  if(fails.length===1){
-    const base=eq?.install?new Date(eq.install):null;
-    if(!base) return null;
-    const gap=new Date(fails[0].date)-base;
-    return gap>0?gap/3600000:null;
-  }
-  // 2건 이상: 고장 간격 평균
+  if(fails.length<2) return null;
   let totalGap=0;
   for(let i=1;i<fails.length;i++){
     const prev=fails[i-1].end||fails[i-1].date;
@@ -2412,19 +2403,18 @@ function calcMTBF(eqId){
   return totalGap/(fails.length-1)/3600000;
 }
 function calcMTTR(eqId){
-  // hours가 있는 것 우선, 없으면 start~end 계산
   const fails=db.maints.filter(m=>m.eqId===eqId&&m.type==='고장');
-  if(!fails.length)return null;
-  let total=0,count=0;
+  if(!fails.length) return null;
+  let total=0, count=0;
   fails.forEach(m=>{
-    if(m.hours>0){
-      total+=m.hours;count++;
-    } else if(m.start&&m.end){
+    // start/end 우선, 없으면 hours 사용
+    if(m.start&&m.end){
       const diff=(new Date(m.end)-new Date(m.start))/3600000;
       if(diff>0){total+=diff;count++;}
+    } else if(m.hours>0){
+      total+=m.hours;count++;
     }
   });
-  // hours도 없고 시간도 없으면 카운트만 반환 (1건이면 데이터 부족)
   if(!count) return null;
   return total/count;
 }
