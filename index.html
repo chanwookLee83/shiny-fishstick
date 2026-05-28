@@ -190,6 +190,10 @@ body{font-family:var(--sans);color:var(--text);display:flex;flex-direction:colum
 .finput,.fselect,.ftextarea{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-family:var(--mono);font-size:15px;padding:11px 12px;outline:none;appearance:none;-webkit-appearance:none;transition:border-color .15s,box-shadow .15s;}
 .finput:focus,.fselect:focus,.ftextarea:focus{border-color:var(--amber);box-shadow:0 0 0 3px #f59e0b12;}
 .finput::placeholder,.ftextarea::placeholder{color:#1e3050;}
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.55;cursor:pointer;}
+body.light input[type="date"]::-webkit-calendar-picker-indicator,
+body.light input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:none;opacity:.45;}
 .ftextarea{resize:none;height:76px;font-size:14px;}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
 .frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
@@ -302,6 +306,10 @@ body{font-family:var(--sans);color:var(--text);display:flex;flex-direction:colum
 .mlog-parts-title{font-family:var(--cond);font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:6px;font-weight:700;}
 .mlog-part-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border);font-size:13px;}
 .mlog-part-row:last-child{border-bottom:none;}
+.mlog-part-pn{font-family:var(--mono);font-size:11px;color:var(--blue);}
+.mlog-part-name{font-size:12px;flex:1;margin:0 8px;}
+.mlog-part-qty{font-family:var(--mono);font-size:11px;color:var(--muted);}
+.mlog-part-cost{font-family:var(--mono);font-size:11px;color:var(--amber);margin-left:8px;}
 
 /* PARTS */
 .part-item{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:12px;margin-bottom:8px;}
@@ -630,8 +638,12 @@ body.light .sec-title::after{background:#d4d9e2;}
   .mlog-date{font-size:13px;}
   .mlog-content{font-size:15px;}
   .mchip{font-size:13px;padding:4px 11px;}
-  .mlog-parts-title{font-size:12px;}
-  .mlog-part-row{font-size:14px;}
+  .mlog-parts-title{font-size:14px;letter-spacing:3px;margin-bottom:8px;}
+  .mlog-part-row{font-size:15px;padding:7px 0;}
+  .mlog-part-pn{font-size:14px;}
+  .mlog-part-name{font-size:15px;}
+  .mlog-part-qty{font-size:14px;}
+  .mlog-part-cost{font-size:14px;}
   .part-name{font-size:17px;}
   .part-pn{font-size:14px;}
   .filter-chip{font-size:13px;padding:6px 14px;}
@@ -2158,10 +2170,10 @@ function renderMaintLog(){
         <div class="mlog-parts-title">사용 부품</div>
         ${m.parts.map(p=>`
         <div class="mlog-part-row">
-          <span style="font-family:var(--mono);font-size:11px;color:var(--blue)">[${p.pn}]</span>
-          <span style="font-size:12px;flex:1;margin:0 8px;">${p.name}</span>
-          <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">×${p.qty}</span>
-          <span style="font-family:var(--mono);font-size:11px;color:var(--amber);margin-left:8px;">${fmtCost(p.price*p.qty)}</span>
+          <span class="mlog-part-pn">[${p.pn}]</span>
+          <span class="mlog-part-name">${p.name}</span>
+          <span class="mlog-part-qty">×${p.qty}</span>
+          <span class="mlog-part-cost">${fmtCost(p.price*p.qty)}</span>
         </div>`).join('')}
       </div>`:''}
     </div>`}).join('');
