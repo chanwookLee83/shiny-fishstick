@@ -939,7 +939,7 @@ body.light .ac-item:hover{background:#f3f4f6;color:var(--amber);}
   <!-- 날짜 필터 -->
   <div class="sec" style="margin-top:4px;">
     <div class="sec-title">기간 필터</div>
-    <div class="frow" style="margin-bottom:0;">
+    <div class="frow" style="margin-bottom:8px;">
       <div class="field" style="margin-bottom:0;">
         <label class="flabel">시작일</label>
         <input class="finput" id="sFilterDateFrom" type="date" onchange="renderStats()" oninput="renderStats()" style="font-size:13px;padding:8px 10px;">
@@ -950,6 +950,7 @@ body.light .ac-item:hover{background:#f3f4f6;color:var(--amber);}
       </div>
       <button class="btn-sm bsm-r" style="margin-top:18px;flex-shrink:0;" onclick="clearStatsDateFilter()">↺</button>
     </div>
+    <button id="btnStatsMtbfOnly" data-on="1" onclick="toggleStatsMtbfOnly()" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:7px;border:1.5px solid var(--green);background:var(--green);color:#fff;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;">✅ 정비기록 있는 장비만</button>
   </div>
   <div class="sec">
     <div class="sec-title">전체 KPI</div>
@@ -2526,6 +2527,20 @@ function clearStatsDateFilter(){
   if(f)f.value=''; if(t)t.value='';
   renderStats();
 }
+function toggleStatsMtbfOnly(){
+  const btn=document.getElementById('btnStatsMtbfOnly');
+  if(!btn)return;
+  const isOn=btn.dataset.on!=='0';
+  btn.dataset.on=isOn?'0':'1';
+  if(!isOn){
+    btn.style.background='var(--green)';btn.style.color='#fff';btn.style.borderColor='var(--green)';
+    btn.textContent='✅ 정비기록 있는 장비만';
+  }else{
+    btn.style.background='transparent';btn.style.color='var(--muted)';btn.style.borderColor='var(--border2)';
+    btn.textContent='☐ 정비기록 있는 장비만';
+  }
+  renderStats();
+}
 function renderStats(){
   const fFrom=document.getElementById('sFilterDateFrom')?.value||'';
   const fTo=document.getElementById('sFilterDateTo')?.value||'';
@@ -2543,8 +2558,12 @@ function renderStats(){
 
   // MTBF/MTTR 목록
   const mtEl=document.getElementById('mtbfList');
-  const activeEqs=db.eqs.filter(eq=>filteredMaints.some(m=>m.eqId===eq.id));
-  if(!activeEqs.length){mtEl.innerHTML='<div class="empty" style="padding:14px;">'+(fFrom||fTo?'해당 기간에 정비 기록이 있는 장비 없음':'데이터 없음')+'</div>';}
+  const onlyWithRecords=document.getElementById('btnStatsMtbfOnly')?.dataset.on!=='0';
+  const eqsWithRecords=db.eqs.filter(eq=>filteredMaints.some(m=>m.eqId===eq.id));
+  const activeEqs=onlyWithRecords ? eqsWithRecords : db.eqs;
+  const hiddenCount=db.eqs.length-eqsWithRecords.length;
+  if(!eqsWithRecords.length&&onlyWithRecords){mtEl.innerHTML='<div class="empty" style="padding:14px;">'+(fFrom||fTo?'해당 기간에 정비 기록이 있는 장비 없음':'데이터 없음')+'</div>';}
+  else if(!activeEqs.length){mtEl.innerHTML='<div class="empty" style="padding:14px;">데이터 없음</div>';}
   else{
     mtEl.innerHTML=activeEqs.map(eq=>{
       const fails=filteredMaints.filter(m=>m.eqId===eq.id&&m.type==='고장');
@@ -2574,7 +2593,8 @@ function renderStats(){
             ${mttrNote?`<div style="font-family:var(--mono);font-size:9px;color:var(--red);">${mttrNote}</div>`:''}
           </div>
         </div>
-      </div>`}).join('');
+      </div>`}).join('')
+      +(onlyWithRecords&&hiddenCount>0?`<div style="text-align:center;padding:8px 0;font-family:var(--mono);font-size:11px;color:var(--muted);">정비 기록 없는 장비 ${hiddenCount}대 숨김</div>`:'');
   }
 
   drawMonthlyChart(filteredMaints);
