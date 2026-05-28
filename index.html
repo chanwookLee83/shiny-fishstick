@@ -843,21 +843,25 @@ body.light .ac-item:hover{background:#f3f4f6;color:var(--amber);}
       <div class="fselect-w"><select class="fselect" id="mFilterEq" onchange="renderMaintLog()"><option value="">전체 장비</option></select></div>
       <div class="fselect-w"><select class="fselect" id="mFilterType" onchange="renderMaintLog()">
         <option value="">전체 유형</option>
-        <option>예방</option><option>고장</option><option>정기</option><option>개선</option>
+        <option value="고장">고장수리</option>
+        <option value="프로그램">프로그램 수정</option>
+        <option value="기구부">기구부 수정</option>
+        <option value="개선">개선 수정</option>
       </select></div>
     </div>
     <!-- 날짜 필터 -->
     <div class="frow" style="margin-bottom:10px;">
       <div class="field" style="margin-bottom:0;">
         <label class="flabel">시작일</label>
-        <input class="finput" id="mFilterDateFrom" type="date" onchange="renderMaintLog()" style="font-size:13px;padding:8px 10px;">
+        <input class="finput" id="mFilterDateFrom" type="date" onchange="renderMaintLog()" oninput="renderMaintLog()" style="font-size:13px;padding:8px 10px;">
       </div>
       <div class="field" style="margin-bottom:0;">
         <label class="flabel">종료일</label>
-        <input class="finput" id="mFilterDateTo" type="date" onchange="renderMaintLog()" style="font-size:13px;padding:8px 10px;">
+        <input class="finput" id="mFilterDateTo" type="date" onchange="renderMaintLog()" oninput="renderMaintLog()" style="font-size:13px;padding:8px 10px;">
       </div>
       <button class="btn-sm bsm-r" style="margin-top:18px;flex-shrink:0;" onclick="clearMaintDateFilter()">↺</button>
     </div>
+    <div class="search-result-count" id="maintFilterCount"></div>
     <div id="maintLog"><div class="empty"><span class="empty-icon">🔧</span>정비 이력 없음</div></div>
   </div>
 </div>
@@ -938,11 +942,11 @@ body.light .ac-item:hover{background:#f3f4f6;color:var(--amber);}
     <div class="frow" style="margin-bottom:0;">
       <div class="field" style="margin-bottom:0;">
         <label class="flabel">시작일</label>
-        <input class="finput" id="sFilterDateFrom" type="date" onchange="renderStats()" style="font-size:13px;padding:8px 10px;">
+        <input class="finput" id="sFilterDateFrom" type="date" onchange="renderStats()" oninput="renderStats()" style="font-size:13px;padding:8px 10px;">
       </div>
       <div class="field" style="margin-bottom:0;">
         <label class="flabel">종료일</label>
-        <input class="finput" id="sFilterDateTo" type="date" onchange="renderStats()" style="font-size:13px;padding:8px 10px;">
+        <input class="finput" id="sFilterDateTo" type="date" onchange="renderStats()" oninput="renderStats()" style="font-size:13px;padding:8px 10px;">
       </div>
       <button class="btn-sm bsm-r" style="margin-top:18px;flex-shrink:0;" onclick="clearStatsDateFilter()">↺</button>
     </div>
@@ -2117,7 +2121,7 @@ function saveMaint(){
 function clearMaintForm(){
   ['mContent','mCause','mWorker'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('mEq').value='';
-  document.getElementById('mType').value='예방';
+  document.getElementById('mType').value='고장';
   document.getElementById('mStart').value='';
   document.getElementById('mEnd').value='';
   useParts=[];renderUseParts();
@@ -2143,10 +2147,15 @@ function renderMaintLog(){
     return me&&mt&&mf&&mto;
   });
   list.sort((a,b)=>{const ka=a.start||a.date||'';const kb=b.start||b.date||'';return kb>ka?1:kb<ka?-1:0;});
-  if(!list.length){el.innerHTML='<div class="empty"><span class="empty-icon">🔧</span>정비 이력 없음</div>';return;}
+  const cntEl=document.getElementById('maintFilterCount');
+  if(cntEl){
+    const isFiltered=fEq||fType||fFrom||fTo;
+    cntEl.innerHTML=isFiltered?`전체 <span>${db.maints.length}</span>건 중 <span>${list.length}</span>건 표시`:'';
+  }
+  if(!list.length){el.innerHTML='<div class="empty"><span class="empty-icon">🔧</span>'+(fEq||fType||fFrom||fTo?'필터 조건에 맞는 정비 이력 없음':'정비 이력 없음')+'</div>';return;}
   el.innerHTML=list.map((m,i)=>{
     const realIdx=db.maints.indexOf(m);
-    const typeColor={'예방':'g','고장':'r','정기':'b','개선':'a'}[m.type]||'';
+    const typeColor={'고장':'r','프로그램':'b','기구부':'a','개선':'g'}[m.type]||'';
     const rd=m.start?m.start.slice(0,10):null;
     return `
     <div class="mlog-item">
@@ -2537,8 +2546,8 @@ function renderStats(){
   if(!db.eqs.length){mtEl.innerHTML='<div class="empty" style="padding:14px;">데이터 없음</div>';}
   else{
     mtEl.innerHTML=db.eqs.map(eq=>{
-      const fails=db.maints.filter(m=>m.eqId===eq.id&&m.type==='고장');
-      const allMaints=db.maints.filter(m=>m.eqId===eq.id);
+      const fails=filteredMaints.filter(m=>m.eqId===eq.id&&m.type==='고장');
+      const allMaints=filteredMaints.filter(m=>m.eqId===eq.id);
       const mtbf=calcMTBF(eq.id),mttr=calcMTTR(eq.id);
       const failCount=fails.length;
       const totalMaints=allMaints.length;
@@ -2659,8 +2668,8 @@ function drawTypeChart(filteredMaints){
   const strokeCol=isLight?'#f0f4f8':'#0a0c0f';
   const countCol=isLight?'#c47f00':'#ffcb2b';
   const maints=filteredMaints||db.maints;
-  const types=['예방','고장','정기','개선'];
-  const COLS=['#10b981','#ef4444','#3b82f6','#f59e0b'];
+  const types=['고장','프로그램','기구부','개선'];
+  const COLS=['#ef4444','#3b82f6','#f59e0b','#10b981'];
   const counts=types.map(t=>maints.filter(m=>m.type===t).length);
   const total=counts.reduce((a,b)=>a+b,0);
   if(!total){ctx.fillStyle=mutedCol;ctx.textAlign='center';ctx.font='12px monospace';ctx.fillText('데이터 없음',W/2,H/2);return;}
