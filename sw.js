@@ -1,4 +1,42 @@
-const CACHE = 'mms-v46';
+// Firebase Messaging compat (백그라운드 FCM 수신용)
+importScripts('https://www.gstatic.com/firebasejs/12.13.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/12.13.0/firebase-messaging-compat.js');
+
+firebase.initializeApp({
+  apiKey: "AIzaSyAaqbae8isyjMsCbO7mhPjQSI0DlBwJ_Sk",
+  authDomain: "maintenance-app-3632e.firebaseapp.com",
+  projectId: "maintenance-app-3632e",
+  storageBucket: "maintenance-app-3632e.firebasestorage.app",
+  messagingSenderId: "678083184973",
+  appId: "1:678083184973:web:fdee29ea69f1161b204f04"
+});
+
+const messaging = firebase.messaging();
+
+// 앱이 백그라운드일 때 FCM 메시지 수신 → OS 알림 표시
+messaging.onBackgroundMessage(payload => {
+  const { title, body } = payload.notification || {};
+  return self.registration.showNotification(title || '설비 알림', {
+    body: body || '',
+    icon: './icon-192.png',
+    badge: './icon-192.png',
+    data: payload.data || {}
+  });
+});
+
+// 알림 클릭 → 앱 포커스 또는 열기
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      if (list.length > 0) return list[0].focus();
+      return clients.openWindow('./');
+    })
+  );
+});
+
+// ── 캐시 (버전 올림) ──
+const CACHE = 'mms-v43';
 const ASSETS = [
   './index.html',
   './manifest.json',
@@ -20,7 +58,6 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   const url = e.request.url;
-  // Firebase, Google 외부 요청은 캐시 무시하고 네트워크로 직접
   if (url.includes('firestore.googleapis.com') ||
       url.includes('firebase') ||
       url.includes('gstatic.com') ||
@@ -28,9 +65,7 @@ self.addEventListener('fetch', e => {
     e.respondWith(fetch(e.request));
     return;
   }
-  // 내부 파일만 캐시 사용
   e.respondWith(
     caches.match(e.request).then(r => r || fetch(e.request))
   );
 });
-
