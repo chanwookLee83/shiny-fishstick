@@ -176,12 +176,29 @@ window.enablePushNotifications = async function() {
   }
 };
 
-// 페이지 로드 시 알림 상태 복원
-window.addEventListener('load', () => {
+// 페이지 로드 시 알림 상태 복원 + FCM 토큰 자동 갱신
+window.addEventListener('load', async () => {
   const statusEl = document.getElementById('pushStatus');
-  if (statusEl && localStorage.getItem('fcm_enabled') === '1') {
+  if (localStorage.getItem('fcm_enabled') !== '1') return;
+
+  if (statusEl) {
     statusEl.textContent = '✅ 이 기기에 알림이 활성화되어 있습니다';
     statusEl.style.color = 'var(--green)';
+  }
+
+  // 토큰이 만료/갱신되었을 수 있으므로 자동으로 재등록
+  if (!_messaging || Notification.permission !== 'granted') return;
+  try {
+    const swReg = await navigator.serviceWorker.ready;
+    const token = await getToken(_messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: swReg });
+    if (!token) return;
+    await setDoc(doc(fdb, 'fcm_tokens', token.slice(0, 100)), {
+      token,
+      ua: navigator.userAgent.slice(0, 150),
+      ts: Date.now()
+    });
+  } catch(e) {
+    // 갱신 실패 시 조용히 무시 (다음 로드 시 재시도)
   }
 });
 </script>
