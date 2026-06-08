@@ -919,9 +919,14 @@ body.light .ac-item:hover{background:#f3f4f6;color:var(--amber);}
   <div class="sec">
     <div class="sec-title">부품 사용</div>
     <div class="card blue-t">
-      <div class="frow" style="margin-bottom:10px;">
-        <div class="fselect-w"><select class="fselect" id="mPartSel"><option value="">-- 부품 선택 --</option></select></div>
-        <button class="btn-sm bsm-b" style="height:44px;" onclick="addUsePart()">＋ 추가</button>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <div class="ac-wrap" style="flex:1;">
+          <input class="finput" id="mPartInput" placeholder="부품명 · 형번 검색 후 선택..." autocomplete="off"
+            oninput="partAcInput('mPartInput','mPartIdx')" onfocus="partAcShow('mPartInput','ac-mPartInput','mPartIdx')">
+          <input type="hidden" id="mPartIdx">
+          <div class="ac-list" id="ac-mPartInput"></div>
+        </div>
+        <button class="btn-sm bsm-b" style="height:44px;flex-shrink:0;" onclick="addUsePart()">＋ 추가</button>
       </div>
       <div id="usePartList"><div style="text-align:center;color:var(--muted);font-family:var(--mono);font-size:11px;padding:12px;">사용 부품 없음</div></div>
       <div style="background:var(--bg);border:1px solid var(--border2);border-radius:7px;padding:10px;margin-top:8px;display:flex;justify-content:space-between;align-items:center;">
@@ -1659,8 +1664,13 @@ body.light .ac-item:hover{background:#f3f4f6;color:var(--amber);}
     <div class="field">
       <label class="flabel">사용 부품</label>
       <div style="display:flex;align-items:center;gap:8px;">
-        <div class="fselect-w" style="flex:1;"><select class="fselect" id="eMPartSel"><option value="">-- 부품 선택 --</option></select></div>
-        <button class="btn-sm bsm-b" style="height:44px;" onclick="addUsePartEdit()">＋ 추가</button>
+        <div class="ac-wrap" style="flex:1;">
+          <input class="finput" id="eMPartInput" placeholder="부품명 · 형번 검색 후 선택..." autocomplete="off"
+            oninput="partAcInput('eMPartInput','eMPartIdx')" onfocus="partAcShow('eMPartInput','ac-eMPartInput','eMPartIdx')">
+          <input type="hidden" id="eMPartIdx">
+          <div class="ac-list" id="ac-eMPartInput"></div>
+        </div>
+        <button class="btn-sm bsm-b" style="height:44px;flex-shrink:0;" onclick="addUsePartEdit()">＋ 추가</button>
       </div>
       <div id="eUsePartList" style="margin-top:8px;"><div style="text-align:center;color:var(--muted);font-family:var(--mono);font-size:11px;padding:12px;">사용 부품 없음</div></div>
       <div style="background:var(--bg);border:1px solid var(--border2);border-radius:7px;padding:10px;margin-top:8px;display:flex;justify-content:space-between;align-items:center;">
@@ -2236,17 +2246,55 @@ function populateEqSelects(){
 
 // ══════ 정비 ══════
 let useParts=[];
-function populatePartSelect(){
-  const el=document.getElementById('mPartSel');
-  el.innerHTML='<option value="">-- 부품 선택 --</option>'+
-    db.parts.map((p,i)=>`<option value="${i}">[${p.pn}] ${p.name} (재고:${p.qty})</option>`).join('');
+function populatePartSelect(){ /* 자동완성으로 대체 */ }
+
+// ── 부품 자동완성 (공통) ──
+function partAcInput(inputId, hiddenId){
+  document.getElementById(hiddenId).value='';
+  partAcShow(inputId,'ac-'+inputId,hiddenId);
+}
+function partAcShow(inputId, listId, hiddenId){
+  const inp=document.getElementById(inputId);
+  const list=document.getElementById(listId);
+  if(!inp||!list) return;
+  const q=inp.value.trim().toLowerCase();
+  acCloseAll(inputId);
+  const matched=q
+    ? db.parts.filter(p=>p.name.toLowerCase().includes(q)||(p.pn||'').toLowerCase().includes(q)||(p.type||'').toLowerCase().includes(q))
+    : db.parts.slice(0,25);
+  if(!matched.length){list.classList.remove('open');return;}
+  list.innerHTML=matched.slice(0,25).map(p=>{
+    const pidx=db.parts.indexOf(p);
+    const nm=p.name.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    const pn=(p.pn||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    const lowStock=p.qty<=p.safe;
+    const stockColor=lowStock?'var(--red)':'var(--green)';
+    return `<div class="ac-item" style="display:flex;align-items:center;gap:6px;" onmousedown="event.preventDefault();partAcPick('${inputId}','${listId}','${hiddenId}',${pidx})">
+      <span style="font-family:var(--mono);font-size:11px;color:var(--blue);flex-shrink:0;">[${pn}]</span>
+      <span style="flex:1;">${nm}</span>
+      <span style="font-family:var(--mono);font-size:11px;color:${stockColor};flex-shrink:0;">재고 ${p.qty}</span>
+    </div>`;
+  }).join('');
+  list.classList.add('open');
+}
+function partAcPick(inputId, listId, hiddenId, pidx){
+  const p=db.parts[pidx];
+  if(!p) return;
+  const inp=document.getElementById(inputId);
+  const list=document.getElementById(listId);
+  const hidden=document.getElementById(hiddenId);
+  if(inp) inp.value=`[${p.pn}] ${p.name}`;
+  if(hidden) hidden.value=pidx;
+  if(list) list.classList.remove('open');
 }
 function addUsePart(){
-  const idx=parseInt(document.getElementById('mPartSel').value);
-  if(isNaN(idx)){toast('부품을 선택해 주세요','w');return;}
+  const idx=parseInt(document.getElementById('mPartIdx').value);
+  if(isNaN(idx)||idx<0||!db.parts[idx]){toast('부품을 선택해 주세요','w');return;}
   const p=db.parts[idx];
   const ex=useParts.find(u=>u.pidx===idx);
   if(ex){ex.qty++;} else useParts.push({pidx:idx,pn:p.pn,name:p.name,price:p.price,qty:1});
+  document.getElementById('mPartInput').value='';
+  document.getElementById('mPartIdx').value='';
   renderUseParts();
 }
 function renderUseParts(){
@@ -2327,7 +2375,8 @@ function clearMaintForm(){
   document.getElementById('mType').value='고장';
   document.getElementById('mStart').value='';
   document.getElementById('mEnd').value='';
-  document.getElementById('mPartSel').value='';
+  document.getElementById('mPartInput').value='';
+  document.getElementById('mPartIdx').value='';
   useParts=[];renderUseParts();
 }
 function clearMaintDateFilter(){
@@ -2520,12 +2569,13 @@ let maintEditIdx = -1;
 let usePartsEdit = [];
 
 function addUsePartEdit(){
-  const sel=document.getElementById('eMPartSel');
-  const idx=parseInt(sel.value);
-  if(isNaN(idx)){toast('부품을 선택해 주세요','w');return;}
+  const idx=parseInt(document.getElementById('eMPartIdx').value);
+  if(isNaN(idx)||idx<0||!db.parts[idx]){toast('부품을 선택해 주세요','w');return;}
   const p=db.parts[idx];
   const ex=usePartsEdit.find(u=>u.pidx===idx);
   if(ex){ex.qty++;} else usePartsEdit.push({pidx:idx,pn:p.pn,name:p.name,price:p.price,qty:1});
+  document.getElementById('eMPartInput').value='';
+  document.getElementById('eMPartIdx').value='';
   renderUsePartsEdit();
 }
 
@@ -2563,10 +2613,11 @@ function openMaintEdit(i){
   document.getElementById('eMEnd').value    = m.end||'';
   document.getElementById('eMContent').value= m.content||'';
   document.getElementById('eMCause').value  = m.cause||'';
-  // 부품 셀렉트 채우기
-  const pSel = document.getElementById('eMPartSel');
-  if(pSel) pSel.innerHTML = '<option value="">-- 부품 선택 --</option>' +
-    db.parts.map((p,pi)=>`<option value="${pi}">[${p.pn}] ${p.name} (재고:${p.qty})</option>`).join('');
+  // 부품 자동완성 입력 초기화
+  const eMPartInput=document.getElementById('eMPartInput');
+  const eMPartIdx=document.getElementById('eMPartIdx');
+  if(eMPartInput) eMPartInput.value='';
+  if(eMPartIdx) eMPartIdx.value='';
   // 기존 부품 로드
   usePartsEdit = (m.parts||[]).map(p=>{
     const pidx=db.parts.findIndex(pt=>pt.pn===p.pn);
