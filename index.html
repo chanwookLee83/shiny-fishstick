@@ -2403,6 +2403,43 @@ function clearMaintDateFilter(){
   if(fEqId) fEqId.value='';
   setMTypeFilter('');
 }
+let _mTypeFilter='';
+function setMTypeFilter(val){
+  _mTypeFilter=val;
+  document.querySelectorAll('#mTypeChips .filter-chip').forEach(c=>{
+    c.classList.toggle('active',c.dataset.val===val);
+  });
+  renderMaintLog();
+}
+function mFilterEqAcInput(){
+  document.getElementById('mFilterEqId').value='';
+  renderMaintLog();
+  mFilterEqAcShow();
+}
+function mFilterEqAcShow(){
+  const inp=document.getElementById('mFilterEqInput');
+  const list=document.getElementById('ac-mFilterEqInput');
+  if(!inp||!list) return;
+  const q=inp.value.trim().toLowerCase();
+  acCloseAll('mFilterEqInput');
+  const matched=q
+    ? db.eqs.filter(eq=>eq.name.toLowerCase().includes(q)||(eq.loc||'').toLowerCase().includes(q))
+    : db.eqs.slice(0,20);
+  if(!matched.length){list.classList.remove('open');return;}
+  list.innerHTML=matched.slice(0,20).map(eq=>{
+    const nm=eq.name.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    const loc=eq.loc?`<span style="font-size:11px;color:var(--muted);margin-left:6px;">${eq.loc}</span>`:'';
+    const nameArg=eq.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    return `<div class="ac-item" onmousedown="event.preventDefault();mFilterEqAcPick(${eq.id},'${nameArg}')">${nm}${loc}</div>`;
+  }).join('');
+  list.classList.add('open');
+}
+function mFilterEqAcPick(eqId,eqName){
+  document.getElementById('mFilterEqInput').value=eqName;
+  document.getElementById('mFilterEqId').value=eqId;
+  document.getElementById('ac-mFilterEqInput').classList.remove('open');
+  renderMaintLog();
+}
 function renderMaintLog(){
   const el=document.getElementById('maintLog');
   const fEq=document.getElementById('mFilterEqId')?.value||'';
