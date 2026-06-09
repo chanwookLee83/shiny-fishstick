@@ -3166,6 +3166,12 @@ function renderChkPanels(){
   container.innerHTML=CHK_CATS.map((cat,ci)=>{
     const data=getChkData(cat);
     CHK_COUNTS[cat]=data.labels.length;
+    const allBtns=`
+      <div style="display:flex;gap:6px;margin-bottom:8px;">
+        <button class="chk-ok" style="flex:1;padding:7px 4px;font-size:11px;" onclick="setAllChk('${cat}','ok')">✓ 전체 OK</button>
+        <button class="chk-ng" style="flex:1;padding:7px 4px;font-size:11px;" onclick="setAllChk('${cat}','ng')">✕ 전체 NG</button>
+        <button style="flex:1;padding:7px 4px;border-radius:5px;border:1px solid var(--border2);background:transparent;color:var(--muted2);font-family:var(--cond);font-size:11px;font-weight:700;cursor:pointer;" onclick="setAllChk('${cat}',null)">↺ 초기화</button>
+      </div>`;
     const items=data.labels.map((label,i)=>`
       <div class="chk-item" id="ci-${cat}-${i}" onclick="toggleChk('${cat}',${i})">
         <div class="chk-box" id="cb-${cat}-${i}"></div>
@@ -3178,7 +3184,7 @@ function renderChkPanels(){
           <button class="chk-ng" onclick="setChk('${cat}',${i},'ng',event)">NG</button>
         </div>
       </div>`).join('');
-    return `<div class="chk-panel${ci===0?' active':''}" id="chk-${catMap[cat]}">${items}</div>`;
+    return `<div class="chk-panel${ci===0?' active':''}" id="chk-${catMap[cat]}">${allBtns}${items}</div>`;
   }).join('');
 }
 
@@ -3225,6 +3231,14 @@ function resetChkList(){
   const noteEl=document.getElementById('inspChkNote');
   if(noteEl) noteEl.value='';
   resetVerdict();
+  // 탭 버튼과 패널을 첫 번째(공압)로 동기화
+  document.querySelectorAll('.insp-cat-tab').forEach((b,i)=>b.classList.toggle('active',i===0));
+  document.querySelectorAll('.chk-panel').forEach((p,i)=>p.classList.toggle('active',i===0));
+}
+
+function setAllChk(cat, val){
+  for(let i=0;i<CHK_COUNTS[cat];i++) setChkState(cat,i,val);
+  updateSummary();
 }
 function updateSummary(){
   let totalOk=0, totalNg=0, totalDone=0, totalAll=0;
