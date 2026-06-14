@@ -860,8 +860,8 @@ body.light .ac-item:hover{background:#f3f4f6;color:var(--amber);}
 
 <!-- TABBAR -->
 <div class="tabbar">
-  <div class="tab" onclick="gotoTab('req')"   id="tab-req">  <span class="tab-icon">🆘</span>의뢰</div>
-  <div class="tab active" onclick="gotoTab('eq')"    id="tab-eq">   <span class="tab-icon">🏭</span>장비</div>
+  <div class="tab active" onclick="gotoTab('req')"   id="tab-req">  <span class="tab-icon">🆘</span>의뢰</div>
+  <div class="tab" onclick="gotoTab('eq')"    id="tab-eq">   <span class="tab-icon">🏭</span>장비</div>
   <div class="tab" onclick="gotoTab('maint')"  id="tab-maint"> <span class="tab-icon">🔧</span>정비</div>
   <div class="tab" onclick="gotoTab('parts')"  id="tab-parts"> <span class="tab-icon">📦</span>부품</div>
   <div class="tab" onclick="gotoTab('calib')"  id="tab-calib"> <span class="tab-icon">📐</span>검교정<div class="tbadge" id="calibBadge"></div></div>
@@ -873,7 +873,7 @@ body.light .ac-item:hover{background:#f3f4f6;color:var(--amber);}
 </div>
 
 <!-- ══════ 장비 ══════ -->
-<div class="page active" id="page-eq">
+<div class="page" id="page-eq">
   <div class="sec" style="margin-top:4px;">
     <div class="sec-title">장비 등록</div>
     <div class="card amber-t">
@@ -1589,7 +1589,7 @@ body.light .ac-item:hover{background:#f3f4f6;color:var(--amber);}
 </div>
 
 <!-- ══════ 정비 의뢰 ══════ -->
-<div class="page" id="page-req">
+<div class="page active" id="page-req">
   <div class="sec" style="margin-top:4px;">
     <div class="sec-title">정비 의뢰 접수</div>
     <div class="card" style="border:1px solid #ef444440;background:linear-gradient(135deg,#ef444408,#dc262608);">
